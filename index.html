@@ -838,26 +838,38 @@ function initHome() {
 
   // Planetas secundarios — escritos anteriores, más pequeños pero igual
   // de reales: hover muestra título+fecha, clic entra al escrito.
-  const secondarySlots = [
+  // El primer slot vive cerca del planeta protagonista (misma "zona" del
+  // universo, se sienten parte de una sola escena) en pantallas anchas;
+  // en móvil no hay espacio para eso sin que se encimen, así que ahí
+  // vuelve a su propia esquina.
+  const secondarySlotsWide = [
+    { x: 58, y: 19, size: 128 },
+    { x: 88, y: 20, size: 96 },
+    { x: 10, y: 78, size: 84 },
+  ];
+  const secondarySlotsNarrow = [
     { x: 15, y: 21, size: 128 },
     { x: 88, y: 20, size: 96 },
     { x: 10, y: 78, size: 84 },
   ];
+  const isNarrowViewport = () => window.innerWidth < 760;
   secondaryWritings.forEach((writing, i) => {
     const rand = seededRandom(writing.slug);
-    const slot = secondarySlots[i % secondarySlots.length];
     const jitterX = (rand() - 0.5) * 4;
     const jitterY = (rand() - 0.5) * 4;
-    const rangeX = safePctRange(slot.size, window.innerWidth);
-    const rangeY = safePctRange(slot.size, window.innerHeight);
-    const x = clamp(slot.x + jitterX, rangeX.min, rangeX.max);
-    const y = clamp(slot.y + jitterY, rangeY.min, rangeY.max);
-    const c = makePlanetCanvas(slot.size, x, y, 0.1);
+    const slotFor = () => (isNarrowViewport() ? secondarySlotsNarrow : secondarySlotsWide)[i % secondarySlotsWide.length];
+    const initialSlot = slotFor();
+    const rangeX = safePctRange(initialSlot.size, window.innerWidth);
+    const rangeY = safePctRange(initialSlot.size, window.innerHeight);
+    const x = clamp(initialSlot.x + jitterX, rangeX.min, rangeX.max);
+    const y = clamp(initialSlot.y + jitterY, rangeY.min, rangeY.max);
+    const c = makePlanetCanvas(initialSlot.size, x, y, 0.1);
     c.wrap.setAttribute("data-cursor-hover", "");
     host.appendChild(c.wrap);
     planets.push(new Planet(c.canvas, writing.planetStyle, { interactive: true, dist: 3.4 }));
     wireWritingPlanet(c.wrap, writing);
     window.addEventListener("resize", () => {
+      const slot = slotFor();
       const rx = safePctRange(slot.size, window.innerWidth);
       const ry = safePctRange(slot.size, window.innerHeight);
       c.wrap.style.left = clamp(slot.x + jitterX, rx.min, rx.max) + "%";
