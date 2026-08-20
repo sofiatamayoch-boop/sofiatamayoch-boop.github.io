@@ -183,6 +183,13 @@
     #manifesto p{font-size:1rem;}
     #home-footer-row{position:fixed;left:22px;right:22px;bottom:18px;margin:0;z-index:4;}
     .hero,.section,.teaser{padding-left:6vw;padding-right:6vw;}
+    /* En vez de encimar "Universo en construcción" contra la esquina
+       (se envolvía en dos líneas y se veía apretado), lo bajamos debajo
+       del bloque de marca en su propia línea. */
+    #home-header-row{flex-direction:column;align-items:flex-start;gap:10px;}
+    #home-header-row > .mono-tag{align-self:flex-start;}
+    .back-link{font-size:10px;letter-spacing:.16em;white-space:nowrap;}
+    .hero{padding-top:64px;}
   }
 </style>
 </head>
@@ -191,13 +198,13 @@
 <canvas id="bg-stars"></canvas>
 <canvas id="bg-nebula"></canvas>
 <div id="iris"></div>
-<span class="back-link mono-tag" id="back-link">← universo</span>
+<span class="back-link mono-tag" id="back-link">← regresa al universo</span>
 
 <!-- HOME -->
 <section id="view-home" class="view active">
   <div id="home-planets"></div>
   <div id="home-overlay">
-    <div class="row">
+    <div class="row" id="home-header-row">
       <div id="brand-block">
         <span class="mono-tag">SOFÍA</span>
         <span id="brand-tagline">Escribo para darle sentido a todo lo que mi loca cabeza cuestiona.</span>
@@ -819,6 +826,18 @@ function safePctRange(sizePx, viewportPx) {
   return { min: halfPct, max: 100 - halfPct };
 }
 
+// El bloque de marca ("SOFÍA" + leyenda) puede crecer de alto (p.ej. en
+// móvil, donde se apila en varias líneas) — esto mide su altura real para
+// que ningún planeta secundario empiece a superponerse con él, sin
+// depender de un número fijo que se desactualice si el texto cambia.
+function minYPctClearingHeader(sizePx, marginPx) {
+  const header = document.querySelector("#home-header-row");
+  if (!header) return 0;
+  const bottom = header.getBoundingClientRect().bottom;
+  const centerMinPx = bottom + marginPx + sizePx / 2;
+  return (centerMinPx / window.innerHeight) * 100;
+}
+
 function initHome() {
   const host = document.getElementById("home-planets");
   const featuredWriting = WRITINGS[0];
@@ -861,8 +880,9 @@ function initHome() {
     const initialSlot = slotFor();
     const rangeX = safePctRange(initialSlot.size, window.innerWidth);
     const rangeY = safePctRange(initialSlot.size, window.innerHeight);
+    const minYHeader = minYPctClearingHeader(initialSlot.size, 20);
     const x = clamp(initialSlot.x + jitterX, rangeX.min, rangeX.max);
-    const y = clamp(initialSlot.y + jitterY, rangeY.min, rangeY.max);
+    const y = clamp(Math.max(initialSlot.y + jitterY, minYHeader), rangeY.min, rangeY.max);
     const c = makePlanetCanvas(initialSlot.size, x, y, 0.1);
     c.wrap.setAttribute("data-cursor-hover", "");
     host.appendChild(c.wrap);
@@ -872,8 +892,9 @@ function initHome() {
       const slot = slotFor();
       const rx = safePctRange(slot.size, window.innerWidth);
       const ry = safePctRange(slot.size, window.innerHeight);
+      const minY = minYPctClearingHeader(slot.size, 20);
       c.wrap.style.left = clamp(slot.x + jitterX, rx.min, rx.max) + "%";
-      c.wrap.style.top = clamp(slot.y + jitterY, ry.min, ry.max) + "%";
+      c.wrap.style.top = clamp(Math.max(slot.y + jitterY, minY), ry.min, ry.max) + "%";
     });
   });
 
