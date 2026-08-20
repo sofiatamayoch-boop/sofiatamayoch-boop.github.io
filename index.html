@@ -159,6 +159,7 @@
   .singularity-dot{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 20px 6px rgba(255,255,255,.5);transform:translate(-50%,-50%);}
 
   .dissolve-word{display:inline-block;}
+  .v-scrub .lines p.signature-line{margin-top:34px;font-size:18px;color:rgba(243,239,230,.45);}
 
   .teaser{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;border-top:1px solid rgba(243,239,230,.1);position:relative;cursor:pointer;padding:6vh 6vw;}
   .teaser h3{font-family:var(--grotesk);font-weight:700;font-size:clamp(1.6rem,4.5vw,2.8rem);margin:0;max-width:640px;}
@@ -1832,6 +1833,10 @@ function buildArticle(writing) {
         if (i < words.length - 1) p.appendChild(document.createTextNode(" "));
       });
       linesHost.appendChild(p);
+      const signature = document.createElement("p");
+      signature.className = "reveal-line signature-line";
+      signature.textContent = "— Sofía Tamayo Chávez";
+      linesHost.appendChild(signature);
       sticky.appendChild(linesHost);
       sec.appendChild(sticky);
       root.appendChild(sec);
