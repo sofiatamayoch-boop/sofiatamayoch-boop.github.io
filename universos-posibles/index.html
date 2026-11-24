@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Universos Posibles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: festival juvenil, cálido y directo; frases cortas.
+   IDEA: un póster-sticker que se recorre como un camino de 6 paradas.
+   PICTURE: planeta lima con personajes haciendo actividades; tarjetas-sticker.
+   COLOUR and TYPE: crema, negro, lima, azul, coral, morado · Archivo Black + Inter.
+   LAYOUT: una columna en celular, rejilla de tarjetas; barra de avance arriba y botones grandes abajo. */
+:root{color-scheme:light;--bg:#F7F2E8;--paper:#FFFDF7;--ink:#171717;--lime:#D9FF43;--blue:#315BEB;--coral:#FF7949;--purple:#9D79E8;--soft:#4A4A4A}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:'Archivo Black',Impact,sans-serif;font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+/* barra de avance */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:3px solid var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{font-family:'Archivo Black',sans-serif;font-size:15px;line-height:1;white-space:nowrap}
+.prog{display:flex;gap:6px;flex:1}
+.prog span{flex:1;height:12px;border:2px solid var(--ink);border-radius:9px;background:var(--paper)}
+.prog span.on{background:var(--lime)}.prog span.now{background:var(--coral)}
+.steplbl{font:700 13px 'Space Grotesk',sans-serif;white-space:nowrap}
+/* botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:12px 22px;border:3px solid var(--ink);border-radius:16px;background:var(--lime);font-family:'Archivo Black',sans-serif;font-size:17px;line-height:1.1;cursor:pointer;box-shadow:4px 4px 0 var(--ink);text-decoration:none;color:var(--ink);transition:transform .12s}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.btn.sec{background:var(--paper)}.btn.blue{background:var(--blue);color:#F7F2E8}.btn.coral{background:var(--coral)}.btn.sm{min-height:44px;font-size:14px;padding:8px 14px;box-shadow:3px 3px 0 var(--ink)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.nav{position:sticky;bottom:0;z-index:20;background:var(--bg);border-top:3px solid var(--ink)}
+.nav .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-block:10px}
+.nav .count{font:700 15px 'Space Grotesk',sans-serif;text-align:center}
+/* secciones */
+.screen{padding:28px 0 40px}
+.eyebrow{font:700 14px 'Space Grotesk',sans-serif;letter-spacing:1px;margin:0 0 8px}
+.h1{font-size:clamp(34px,7vw,64px)}.h2{font-size:clamp(28px,5vw,44px)}
+.lead{font-size:18px;font-weight:600;max-width:640px;margin:12px 0 0}
+.note{border:3px solid var(--ink);border-radius:16px;background:var(--paper);padding:12px 16px;font-weight:600;margin:16px 0}
+.note.lime{background:var(--lime)}.note.coral{background:var(--coral)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:8px 14px;border:3px solid var(--ink);border-radius:999px;background:var(--paper);font-weight:700;cursor:pointer;font-size:15px}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--lime)}
+.tag{display:inline-block;padding:2px 10px;border:2px solid var(--ink);border-radius:999px;font-size:13px;font-weight:700;background:var(--paper)}
+.tag.hit{background:var(--lime)}
+/* bienvenida */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+.hero svg{width:100%;height:auto;display:block}
+.privacy{font-size:14px;font-weight:600}
+/* tarjetas de interés */
+.search{display:flex;gap:10px;align-items:center;margin:18px 0 12px}
+.search input{flex:1;min-height:52px;border:3px solid var(--ink);border-radius:16px;padding:10px 14px;font-size:17px;background:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:12px;border:3px solid var(--ink);border-radius:20px;background:var(--paper);cursor:pointer;box-shadow:4px 4px 0 var(--ink);min-height:118px;transition:transform .15s,background .15s}
+.card:hover{transform:translateY(-2px)}
+.card[aria-pressed=true]{background:var(--lime)}
+.card .ic{width:52px;height:52px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;flex:none}
+.card .ic svg{width:34px;height:34px}
+.card .nm{font-weight:800;font-size:16px;line-height:1.2}
+.card .ok{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:3px solid var(--ink);background:var(--paper);display:grid;place-items:center}
+.card[aria-pressed=true] .ok{background:var(--ink)}
+.card .ok svg{width:16px;height:16px;opacity:0}.card[aria-pressed=true] .ok svg{opacity:1}
+.cathead{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
+.cathead h3{font-size:22px}
+/* sugerencias */
+.recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:18px}
+.rec{min-height:150px}
+.rec .ds{font-size:14px;font-weight:500;line-height:1.35}
+.rec .why{font-size:13px;font-weight:700;color:var(--soft)}
+.rec .pick{margin-top:auto;font:700 13px 'Space Grotesk',sans-serif;padding:4px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--bg)}
+.rec[aria-pressed=true] .pick{background:var(--ink);color:var(--lime)}
+/* lugares */
+.filters{display:grid;gap:14px;border:3px solid var(--ink);border-radius:20px;background:var(--paper);padding:16px;margin:18px 0}
+.filters h3{font-size:16px;margin-bottom:8px}
+.fz{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:14px;align-items:start}
+.zmap svg{width:100%;height:auto;display:block}
+.zmap button{all:unset}
+select{min-height:48px;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;background:var(--paper);font-size:16px;width:100%;max-width:340px}
+.places{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.pl{border:3px solid var(--ink);border-radius:22px;background:var(--paper);box-shadow:5px 5px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:8px}
+.pl.sel{background:#F1FFC2}
+.pl .kind{align-self:flex-start;font:700 12px 'Space Grotesk',sans-serif;letter-spacing:.5px;padding:4px 10px;border:2px solid var(--ink);border-radius:999px}
+.pl h3{font-size:20px}
+.pl p{margin:0;font-size:14px;line-height:1.45}
+.pl .meta{font-size:13px;color:var(--soft);font-weight:600}
+.pl .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.k-faro{background:var(--coral)}.k-utopia{background:var(--purple)}.k-pilares{background:var(--lime)}.k-biblioteca{background:var(--blue);color:#F7F2E8}.k-cultural{background:var(--blue);color:#F7F2E8}.k-otro{background:var(--paper)}
+.free{font-weight:800}
+.sub{font-size:22px;margin:30px 0 4px}
+.empty{border:3px dashed var(--ink);border-radius:20px;padding:20px;text-align:center;font-weight:600}
+/* plan */
+.form{display:grid;gap:22px;max-width:760px;margin-top:20px}
+.form label,.qtitle{font-family:'Archivo Black',sans-serif;font-size:19px;display:block;margin-bottom:8px}
+.form input[type=text]{width:100%;min-height:52px;border:3px solid var(--ink);border-radius:16px;padding:10px 14px;font-size:17px;background:var(--paper)}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-weight:700;cursor:pointer;text-align:left}
+.opt[aria-checked=true]{background:var(--lime)}
+.optc{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.optc .opt{flex:1 1 260px}.lk{font-weight:700;color:#315BEB;padding:10px 4px;min-height:44px;display:inline-flex;align-items:center}
+.opt .dot{width:22px;height:22px;border-radius:50%;border:3px solid var(--ink);flex:none;background:var(--paper)}
+.opt[aria-checked=true] .dot{background:var(--ink)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pills span{padding:6px 12px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font-weight:700;font-size:14px}
+.steps3 svg{width:100%;max-width:520px;height:auto;display:block}
+/* resumen */
+.sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.box{border:3px solid var(--ink);border-radius:22px;background:var(--paper);padding:18px;box-shadow:5px 5px 0 var(--ink)}
+.box h3{font-size:18px;margin-bottom:10px}
+.box.lime{background:var(--lime)}.box.purple{background:var(--purple)}.box.coral{background:var(--coral)}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--lime);padding:12px 18px;border-radius:14px;font-weight:700;max-width:90vw;text-align:center}
+.pop{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:700px){.hero{grid-template-columns:1fr}.fz{grid-template-columns:1fr}.sum{grid-template-columns:1fr}.steplbl{display:none}.brand{font-size:13px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.top,.nav,.actions,.noprint{display:none!important}body{background:#fff}.box{box-shadow:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><span class="brand">UNIVERSOS<br>POSIBLES</span><div class="prog" id="prog" aria-hidden="true"></div><span class="steplbl" id="steplbl"></span></div></header>
+<main id="app" class="wrap" tabindex="-1"></main>
+<nav class="nav" id="nav" aria-label="Navegación entre pantallas"></nav>
+<div id="live" class="sr" aria-live="polite"></div>
+<script>
+{
+/* ================= DATOS =================
+   Para ampliar el catálogo: agrega actividades en ACT y líneas "Nombre:etiqueta etiqueta" en INTS.
+   Cada lugar solo se conecta con las actividades documentadas para esa sede (campo t). */
+const CATS={
+ arte:{n:'Arte y creatividad',c:'#FF7949',i:'palette'},musica:{n:'Música',c:'#9D79E8',i:'guitar'},expresion:{n:'Baile y expresión',c:'#D9FF43',i:'dance'},
+ deportes:{n:'Deportes',c:'#315BEB',i:'ball'},tecnologia:{n:'Tecnología',c:'#171717',i:'laptop'},ciencia:{n:'Ciencia y naturaleza',c:'#D9FF43',i:'flask'},
+ oficios:{n:'Cocina y oficios',c:'#FF7949',i:'pot'},lectura:{n:'Lectura y comunicación',c:'#FFFDF7',i:'book'},comunidad:{n:'Comunidad y personas',c:'#9D79E8',i:'hands'}};
+const ACTS=`
+arte|dibujo|Dibujo|Crea imágenes con lápiz y colores.|pintura ilustracion comic artes-plasticas diseno-grafico animacion arte-digital
+arte|pintura|Pintura|Usa colores y pinceles para crear.|dibujo artes-plasticas arte-urbano ilustracion grabado
+arte|artes-plasticas|Artes plásticas|Pintura, dibujo y escultura en taller.|dibujo pintura escultura grabado manualidades
+arte|ilustracion|Ilustración|Dibuja para contar historias.|dibujo comic personajes diseno-grafico arte-digital
+arte|comic|Cómic|Cuenta historias con viñetas.|dibujo ilustracion personajes escritura animacion
+arte|personajes|Diseño de personajes|Inventa personajes con su propio estilo.|ilustracion comic animacion videojuegos dibujo
+arte|manualidades|Manualidades|Crea objetos con tus manos.|artesanias cartoneria decoracion artes-plasticas costura
+arte|escultura|Escultura|Da forma a figuras en 3D.|ceramica artes-plasticas cartoneria alebrijes
+arte|ceramica|Cerámica|Moldea barro y crea piezas.|escultura artesanias vitral manualidades
+arte|grabado|Grabado|Imprime imágenes con placas y tinta.|serigrafia dibujo artes-plasticas diseno-grafico
+arte|serigrafia|Serigrafía|Estampa diseños en papel o tela.|grabado diseno-grafico diseno-moda costura
+arte|vitral|Vitral|Arma figuras con vidrio de colores.|ceramica artesanias joyeria
+arte|cartoneria|Cartonería|Crea figuras con papel y cartón.|alebrijes manualidades escultura artesanias
+arte|alebrijes|Alebrijes|Figuras fantásticas llenas de color.|cartoneria artesanias pintura escultura
+arte|arte-urbano|Arte urbano|Murales y grafiti, siempre con permiso.|pintura dibujo diseno-grafico
+arte|arte-digital|Arte digital|Dibuja y pinta en la computadora.|ilustracion diseno-digital animacion diseno-grafico dibujo
+arte|diseno-grafico|Diseño gráfico|Carteles, logos y letras.|diseno-digital ilustracion serigrafia arte-digital
+arte|animacion|Animación|Haz que tus dibujos se muevan.|arte-digital animacion-3d personajes cine comic
+arte|diseno-moda|Diseño de modas|Diseña tu propia ropa.|costura bordado serigrafia joyeria
+arte|joyeria|Joyería|Crea aretes, collares y pulseras.|artesanias diseno-moda vitral
+arte|decoracion|Decoración|Transforma espacios con ideas.|manualidades diseno-grafico artesanias
+arte|fotografia|Fotografía|Captura momentos con una cámara.|cine edicion-video arte-digital produccion-audiovisual
+musica|musica|Música|Aprende a tocar y a crear sonidos.|canto guitarra instrumentos coro produccion-musical
+musica|canto|Canto|Usa tu voz para cantar.|coro musica composicion teatro
+musica|coro|Coro|Canta en grupo.|canto musica musica-tradicional
+musica|guitarra|Guitarra|Aprende acordes y canciones.|instrumentos musica composicion
+musica|piano|Piano|Toca melodías con teclas.|instrumentos musica composicion
+musica|bateria|Batería y percusión|Lleva el ritmo.|instrumentos musica hip-hop
+musica|instrumentos|Instrumentos|Prueba distintos instrumentos.|guitarra piano bateria musica
+musica|composicion|Crear canciones|Escribe letra y música.|canto produccion-musical poesia rap
+musica|produccion-musical|Producción musical|Crea música en la computadora.|grabacion-audio dj composicion computacion
+musica|grabacion-audio|Grabación de audio|Graba voces y sonidos.|produccion-musical radio podcast
+musica|rap|Rap|Rimas sobre un ritmo.|composicion hip-hop poesia dj
+musica|dj|DJ|Mezcla canciones.|produccion-musical rap musica
+musica|musica-tradicional|Música tradicional|Ritmos y sones de México.|danza-folclorica coro musica instrumentos
+expresion|danza|Danza|Mueve tu cuerpo con música.|hip-hop danza-contemporanea danza-folclorica ballet expresion-corporal
+expresion|hip-hop|Hip-hop|Baile urbano con mucha energía.|danza rap danza-contemporanea
+expresion|danza-contemporanea|Danza contemporánea|Movimiento libre y creativo.|danza expresion-corporal ballet
+expresion|ballet|Ballet|Técnica, equilibrio y gracia.|danza danza-contemporanea gimnasia
+expresion|danza-folclorica|Danza folclórica|Bailes tradicionales de México.|danza musica-tradicional
+expresion|danza-aerea|Danza aérea|Baila suspendida en el aire.|circo gimnasia danza
+expresion|teatro|Teatro|Actúa e interpreta historias.|actuacion improvisacion expresion-corporal narracion circo
+expresion|actuacion|Actuación|Da vida a personajes.|teatro improvisacion cine hablar-publico
+expresion|improvisacion|Improvisación|Crea escenas al momento.|teatro actuacion clown
+expresion|circo|Circo|Malabares, acrobacias y más.|clown gimnasia danza-aerea teatro
+expresion|clown|Clown|El arte de hacer reír.|circo teatro improvisacion
+expresion|expresion-corporal|Expresión corporal|Comunica con tu cuerpo.|danza teatro yoga
+deportes|futbol|Fútbol|Juega en equipo y mete goles.|basquetbol atletismo acondicionamiento voleibol equipo
+deportes|basquetbol|Básquetbol|Encesta y juega en equipo.|futbol voleibol atletismo
+deportes|voleibol|Voleibol|Pasa la pelota sobre la red.|basquetbol futbol beisbol
+deportes|beisbol|Béisbol|Batea y corre las bases.|futbol voleibol atletismo
+deportes|box|Box|Técnica, fuerza y disciplina.|artes-marciales acondicionamiento calistenia
+deportes|natacion|Natación|Aprende a nadar.|atletismo acondicionamiento gimnasia
+deportes|atletismo|Atletismo|Correr, saltar y lanzar.|acondicionamiento futbol ciclismo calistenia
+deportes|ciclismo|Ciclismo|Rueda en bici con seguridad.|bmx atletismo skate
+deportes|skate|Skate|Trucos sobre patineta.|bmx patinaje parkour
+deportes|patinaje|Patinaje|Deslízate sobre ruedas o hielo.|skate hockey gimnasia
+deportes|hockey|Hockey|Juego rápido con bastón.|patinaje futbol
+deportes|gimnasia|Gimnasia|Fuerza, equilibrio y flexibilidad.|calistenia circo ballet yoga
+deportes|yoga|Yoga|Respira, estira y relájate.|expresion-corporal gimnasia acondicionamiento
+deportes|calistenia|Calistenia|Ejercicio con tu propio peso.|acondicionamiento parkour gimnasia
+deportes|parkour|Parkour|Muévete saltando obstáculos.|calistenia skate atletismo
+deportes|artes-marciales|Artes marciales|Taekwondo y otras disciplinas.|box gimnasia acondicionamiento
+deportes|escalada|Escalada|Sube paredes con técnica.|calistenia gimnasia parkour
+deportes|bmx|BMX|Trucos en bicicleta.|ciclismo skate parkour
+deportes|tenis|Tenis|Golpea la pelota con raqueta.|padel squash voleibol
+deportes|padel|Pádel|Raqueta en cancha cerrada.|tenis squash
+deportes|squash|Squash|Raqueta contra la pared.|tenis padel
+deportes|ajedrez|Ajedrez|Piensa y planea cada jugada.|programacion juegos
+deportes|acondicionamiento|Acondicionamiento físico|Gana fuerza y condición.|atletismo calistenia box yoga
+tecnologia|computacion|Computación|Aprende a usar la computadora.|programacion diseno-digital web edicion-video
+tecnologia|programacion|Programación|Da instrucciones a la computadora.|apps web videojuegos robotica ia
+tecnologia|robotica|Robótica|Construye robots que se mueven.|electronica programacion inventos
+tecnologia|videojuegos|Videojuegos|Juega y aprende cómo se crean.|programacion personajes animacion narracion
+tecnologia|apps|Crear aplicaciones|Inventa apps para el teléfono.|programacion web diseno-digital
+tecnologia|web|Páginas web|Crea tu propio sitio.|programacion diseno-digital apps
+tecnologia|ia|Inteligencia artificial|Cómo aprenden las máquinas.|programacion robotica computacion
+tecnologia|diseno-digital|Diseño digital|Crea gráficos en pantalla.|diseno-grafico arte-digital web
+tecnologia|edicion-video|Edición de video|Corta y une escenas.|produccion-audiovisual cine video
+tecnologia|animacion-3d|Animación 3D|Modela y anima en 3D.|animacion videojuegos arte-digital
+tecnologia|electronica|Electrónica|Circuitos, luces y motores.|robotica inventos reparar
+tecnologia|produccion-audiovisual|Producción audiovisual|Crea videos de principio a fin.|cine edicion-video fotografia radio video
+tecnologia|radio|Radio|Haz tu propio programa.|podcast periodismo grabacion-audio hablar-publico
+tecnologia|cine|Cine|Mira, analiza y crea películas.|produccion-audiovisual fotografia actuacion edicion-video escritura
+ciencia|animales|Animales|Conoce y cuida a otros seres vivos.|biodiversidad biologia naturaleza medio-ambiente
+ciencia|plantas|Plantas|Cómo crecen y para qué sirven.|huertos biologia naturaleza biodiversidad
+ciencia|experimentos|Experimentos|Descubre cómo funcionan las cosas.|quimica fisica inventos biologia
+ciencia|astronomia|Astronomía y espacio|Estrellas, planetas y galaxias.|fisica experimentos
+ciencia|biologia|Biología|Estudia la vida.|animales plantas biodiversidad experimentos
+ciencia|fisica|Física|Fuerzas, luz y movimiento.|experimentos astronomia inventos
+ciencia|quimica|Química|Mezclas y reacciones.|experimentos cocina
+ciencia|biodiversidad|Biodiversidad|La gran variedad de la vida.|animales plantas medio-ambiente naturaleza
+ciencia|medio-ambiente|Educación ambiental|Aprende a cuidar el planeta.|reciclaje huertos naturaleza biodiversidad
+ciencia|huertos|Huertos urbanos|Siembra y cosecha en la ciudad.|plantas medio-ambiente cocina
+ciencia|reciclaje|Reciclaje|Separa y reutiliza.|medio-ambiente manualidades inventos
+ciencia|naturaleza|Naturaleza|Explora parques y bosques.|animales plantas medio-ambiente
+ciencia|inventos|Construir inventos|Crea soluciones nuevas.|electronica robotica experimentos carpinteria
+oficios|cocina|Cocina|Prepara platillos ricos.|reposteria panaderia bebidas huertos
+oficios|reposteria|Repostería|Pasteles, galletas y postres.|cocina panaderia
+oficios|panaderia|Panadería|Hornea tu propio pan.|reposteria cocina
+oficios|bebidas|Preparar bebidas|Aguas, licuados y más.|cocina
+oficios|costura|Costura|Cose y confecciona ropa.|bordado diseno-moda telar
+oficios|bordado|Bordado|Decora telas con hilo.|costura telar artesanias
+oficios|telar|Telar|Teje con técnicas tradicionales.|bordado costura artesanias
+oficios|carpinteria|Carpintería|Construye con madera.|reparar juguetes inventos
+oficios|mecanica|Mecánica|Cómo funcionan los motores.|reparar electronica
+oficios|artesanias|Artesanías|Objetos hechos a mano con tradición.|alebrijes cartoneria ceramica bordado joyeria
+oficios|reparar|Reparar objetos|Arregla lo que se descompone.|carpinteria electronica mecanica
+oficios|juguetes|Juguetería|Diseña y crea juguetes.|carpinteria cartoneria manualidades
+oficios|globos|Globos de cantoya|Globos de papel tradicionales.|artesanias manualidades
+oficios|emprendimiento|Emprendimiento|Convierte una idea en un proyecto.|artesanias cocina diseno-grafico eventos
+lectura|lectura|Lectura|Descubre libros e historias.|escritura narracion comic poesia
+lectura|escritura|Escritura creativa|Escribe tus propias historias.|poesia lectura comic periodismo narracion
+lectura|poesia|Poesía|Juega con las palabras.|escritura rap composicion
+lectura|narracion|Narración oral|Cuenta historias en voz alta.|teatro hablar-publico lectura
+lectura|periodismo|Periodismo|Investiga y cuenta noticias.|radio escritura podcast fotografia
+lectura|podcast|Podcast|Graba conversaciones.|radio grabacion-audio hablar-publico
+lectura|video|Hacer videos|Graba y comparte ideas.|edicion-video produccion-audiovisual cine
+lectura|hablar-publico|Hablar en público|Expresa tus ideas con seguridad.|teatro narracion radio
+lectura|idiomas|Idiomas|Aprende otras lenguas.|lenguas-originarias lectura
+lectura|lenguas-originarias|Lenguas originarias|Aprende náhuatl y otras lenguas.|idiomas narracion
+lectura|juegos|Ludoteca y juegos|Aprende jugando.|lectura ajedrez manualidades
+comunidad|voluntariado|Ayudar a otros|Apoya a tu comunidad.|comunidad ensenar medio-ambiente
+comunidad|ensenar|Enseñar|Comparte lo que sabes.|narracion hablar-publico voluntariado
+comunidad|eventos|Organizar eventos|Planea actividades para todos.|equipo comunidad hablar-publico
+comunidad|equipo|Trabajo en equipo|Logra metas con otras personas.|futbol teatro eventos
+comunidad|comunidad|Actividades comunitarias|Participa en tu barrio.|voluntariado eventos huertos medio-ambiente
+comunidad|culturas|Conocer culturas|Tradiciones de otros lugares.|idiomas lenguas-originarias musica-tradicional danza-folclorica`;
+const INTS={
+arte:'Dibujar:dibujo|Pintar:pintura|Hacer manualidades:manualidades|Esculpir:escultura|Hacer cerámica:ceramica|Diseñar ropa:diseno-moda|Hacer joyería:joyeria|Crear personajes:personajes|Hacer cómics:comic|Fotografía:fotografia|Decoración:decoracion|Arte digital:arte-digital|Grafiti y arte urbano:arte-urbano|Animación:animacion|Diseño gráfico:diseno-grafico',
+musica:'Cantar:canto|Tocar guitarra:guitarra|Tocar piano:piano|Tocar batería:bateria|Aprender instrumentos:instrumentos musica|Crear canciones:composicion|Grabar música:grabacion-audio|Producción musical:produccion-musical|Rap:rap|DJ:dj|Coros:coro|Música tradicional:musica-tradicional',
+expresion:'Hip-hop:hip-hop|Danza contemporánea:danza-contemporanea|Ballet:ballet|Danza folclórica:danza-folclorica|Teatro:teatro|Actuación:actuacion|Improvisación:improvisacion|Circo:circo|Expresión corporal:expresion-corporal',
+deportes:'Fútbol:futbol|Básquetbol:basquetbol|Voleibol:voleibol|Boxeo:box|Natación:natacion|Correr:atletismo|Atletismo:atletismo acondicionamiento|Ciclismo:ciclismo|Skate:skate|Patinaje:patinaje|Gimnasia:gimnasia|Yoga:yoga|Calistenia:calistenia|Artes marciales:artes-marciales|Escalada:escalada|BMX:bmx|Tenis:tenis|Ajedrez:ajedrez',
+tecnologia:'Computadoras:computacion|Programación:programacion|Robótica:robotica|Videojuegos:videojuegos|Crear aplicaciones:apps|Crear páginas web:web|Inteligencia artificial:ia|Diseño digital:diseno-digital|Edición de video:edicion-video|Animación 3D:animacion-3d|Electrónica:electronica|Fotografía digital:fotografia arte-digital|Producción audiovisual:produccion-audiovisual',
+ciencia:'Animales:animales|Plantas:plantas|Experimentos:experimentos|Astronomía:astronomia|Espacio:astronomia fisica|Biología:biologia|Física:fisica|Química:quimica|Medio ambiente:medio-ambiente|Huertos urbanos:huertos|Reciclaje:reciclaje|Naturaleza:naturaleza|Cuidar animales:animales voluntariado|Construir inventos:inventos',
+oficios:'Cocinar:cocina|Repostería:reposteria|Preparar bebidas:bebidas|Panadería:panaderia|Costura:costura|Bordado:bordado|Carpintería:carpinteria|Mecánica:mecanica|Artesanías:artesanias|Reparar objetos:reparar|Crear productos:emprendimiento manualidades|Emprendimiento:emprendimiento',
+lectura:'Leer:lectura|Escribir historias:escritura|Poesía:poesia|Crear cómics:comic escritura|Periodismo:periodismo|Radio:radio|Podcast:podcast|Cine:cine|Hacer videos:video|Hablar en público:hablar-publico|Aprender idiomas:idiomas|Contar historias:narracion',
+comunidad:'Ayudar a otros:voluntariado|Enseñar:ensenar|Organizar eventos:eventos|Trabajar en equipo:equipo|Cuidar el medio ambiente:medio-ambiente comunidad|Conocer culturas:culturas|Participar en actividades comunitarias:comunidad'};
+const PLACES=[{"id":"F1","n":"FARO de Oriente","k":"faro","a":"Iztapalapa","z":"oriente","d":"Calz. Ignacio Zaragoza s/n, Fuentes de Zaragoza","t":["carpinteria","cartoneria","alebrijes","fotografia","cine","grabado","serigrafia","danza","teatro","musica","guitarra","vitral"],"x":"Carpintería, cartonería, alebrijes, fotografía, cine, grabado, serigrafía, danza, teatro, música, guitarra y vitrales.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F2","n":"FARO Aragón","k":"faro","a":"Gustavo A. Madero","z":"norte","d":"Av. 517 s/n, San Juan de Aragón I Sección","t":["cine","produccion-audiovisual","fotografia","radio","musica","artes-plasticas","lectura","juegos"],"x":"Cine, producción audiovisual, fotografía, radio, comunicación, música y artes plásticas. Cineclub, biblioteca y ludoteca.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F3","n":"FARO Indios Verdes","k":"faro","a":"Gustavo A. Madero","z":"norte","d":"Av. Huitzilihuitl 51, Santa Isabel Tola","t":["huertos","ceramica","danza","teatro","musica","escritura","artesanias"],"x":"Huertos urbanos, cerámica, danza, teatro, música, literatura y artesanías.","e":"Atención: lun a sáb 10:00–18:30; dom 10:00–16:00.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F4","n":"FARO Azcapotzalco Xochicalli","k":"faro","a":"Azcapotzalco","z":"norte","d":"Av. Cultura Norte s/n, U. H. El Rosario","t":["danza","escritura","lenguas-originarias","artes-plasticas","huertos"],"x":"Danza, literatura, lenguas originarias, artes plásticas, medicina tradicional y huertos urbanos.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F5","n":"FARO Cosmos","k":"faro","a":"Miguel Hidalgo","z":"poniente","d":"Calz. México-Tacuba s/n, Tlaxpana","t":["circo","teatro","danza","clown","artes-plasticas","actuacion"],"x":"Circo social, teatro comunitario, danza, clown, artes visuales y creación escénica.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F6","n":"FARO Tláhuac","k":"faro","a":"Tláhuac","z":"oriente","d":"Av. La Turba s/n, col. Miguel Hidalgo, Bosque de Tláhuac","t":["ceramica","grabado","artes-plasticas","juguetes","idiomas"],"x":"Cerámica, grabado, creación gráfica, juguetería, idiomas y artes plásticas.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"F7","n":"FARO Miacatlán","k":"faro","a":"Milpa Alta","z":"sur","d":"Bolívar Poniente s/n, San Jerónimo Miacatlán","t":["ceramica","bordado","vitral","joyeria","diseno-moda","musica","computacion"],"x":"Cerámica, bordado, vitral, joyería, diseño de modas, música y computación.","e":"También se llama “FARO Milpa Alta–Miacatlán”.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M · W","w":true,"p":false},{"id":"F8","n":"FARO Tecómitl","k":"faro","a":"Milpa Alta","z":"sur","d":"Av. Dr. Gastón Melo 40, San Antonio Tecómitl","t":["telar","globos","bordado","lenguas-originarias","grabado","vitral","cocina","serigrafia","huertos"],"x":"Telar de cintura, globos de cantoya, bordado, náhuatl, grabado, vitral, gastronomía, serigrafía y huertos urbanos.","e":"Talleres: lun a vie 10:00–19:00; sáb 10:00–16:00. También se llama “FARO Milpa Alta–Tecómitl”.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M · W","w":true,"p":false},{"id":"U1","n":"UTOPÍA Teotongo","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Dr. Fernando Villegas, San Miguel Teotongo","t":["skate","medio-ambiente"],"x":"Skate, deporte y educación ambiental.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U2","n":"UTOPÍA Olini","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Calz. Ignacio Zaragoza 1715, Ejército Constitucionalista","t":["patinaje","natacion","gimnasia","hockey","skate"],"x":"Patinaje sobre hielo, natación, gimnasia, hockey, skate y talleres.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · D · A · M","w":false,"p":false},{"id":"U3","n":"UTOPÍA Papalotl","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Reforma Económica 52, Reforma Política","t":["medio-ambiente","animales","biodiversidad"],"x":"Educación ambiental, mariposario y recreación.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U4","n":"UTOPÍA Atzintli","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Av. Ermita Iztapalapa s/n, Xalpa","t":["medio-ambiente"],"x":"Deportes, cultura y actividades ambientales.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U5","n":"UTOPÍA Libertad","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Río Nilo y Av. Reforma, Lomas de San Lorenzo","t":["natacion","tenis","basquetbol","huertos","medio-ambiente"],"x":"Natación, tenis, básquetbol, huertos urbanos, ecología y recreación.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · D · A · M","w":false,"p":false},{"id":"U6","n":"UTOPÍA Quetzalcóatl","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Manuel Cañas 2864, Desarrollo Urbano Quetzalcóatl","t":["atletismo","acondicionamiento"],"x":"Atletismo, deporte y acondicionamiento físico.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U7","n":"UTOPÍA Meyehualco","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Av. Genaro Estrada, Santa Cruz Meyehualco","t":["astronomia"],"x":"Deportes, planetario y parque de dinosaurios.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U8","n":"UTOPÍA Tecoloxtitlan","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Av. Colima esq. Culiacán, San Sebastián Tecoloxtitla","t":[],"x":"Actividades deportivas y culturales.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · A · M","w":false,"p":false},{"id":"U9","n":"UTOPÍA La Cascada Xicoténcatl","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Calle Enna, Santa Martha Acatitla Norte","t":["escritura"],"x":"Talleres culturales, escritura y recreación.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"U10","n":"UTOPÍA Tezontli","k":"utopia","a":"Iztapalapa","z":"oriente","d":"José Clemente Orozco y Av. de las Torres, Barrio San Antonio","t":["bmx","box","escalada","futbol"],"x":"BMX, deportes extremos, box, escalada, fútbol y actividades artísticas.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · D · M","w":false,"p":false},{"id":"U11","n":"UTOPÍA Ixtapalcalli","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Por confirmar: Ermita Iztapalapa 1385, Barrio San Pablo (T) o Alfonso Toro 1856, Escuadrón 201 (D)","t":["cine","fotografia","natacion","box","futbol","basquetbol"],"x":"Cine, fotografía, cultura, natación, box, fútbol y básquetbol.","e":"Según el mapa, aquí funciona la Escuela Pohualizcalli.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · D · M","w":false,"p":false},{"id":"U12","n":"Barco UTOPÍA","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Periférico Oriente y Eje 6 Sur, U. Vicente Guerrero","t":["medio-ambiente","animales"],"x":"Acuario digital, educación ambiental y actividades culturales.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"U13","n":"UTOPÍA Cuauhtlicalli","k":"utopia","a":"Iztapalapa","z":"oriente","d":"Av. Genaro Estrada, Santa Cruz Meyehualco (D)","t":["atletismo","futbol","basquetbol","acondicionamiento","musica"],"x":"Atletismo, fútbol, básquetbol, gimnasio y música.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · D · M","w":false,"p":false},{"id":"U14","n":"UTOPÍA Mixiuhca","k":"utopia","a":"Iztacalco","z":"centro","d":"Viaducto Río de la Piedad 6, Granjas México","t":["natacion","padel","tenis","squash","ciclismo","danza-aerea"],"x":"Natación, pádel, tenis, squash, ciclismo, danza aérea y go-karts.","e":"Confirma qué actividades son gratuitas. Inscripción por convocatoria.","f":"confirmar","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"U15","n":"UTOPÍA Eduardo Molina","k":"utopia","a":"Venustiano Carranza","z":"centro","d":"Colonia 20 de Noviembre","t":[],"x":"Actividades comunitarias y recreativas.","e":"","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"P1","n":"PILARES Isidro Fabela","k":"pilares","a":"Álvaro Obregón","z":"poniente","d":"Antigua Vía a La Venta s/n, col. Isidro Fabela (W)","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A · W","w":true,"p":false},{"id":"P2","n":"PILARES Tacubaya","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P3","n":"PILARES Ratón Macías","k":"pilares","a":"Cuauhtémoc","z":"centro","d":"Dr. Andrade 401, col. Buenos Aires (W)","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A · W","w":true,"p":false},{"id":"P4","n":"PILARES San Francisco Tultenco","k":"pilares","a":"Cuauhtémoc","z":"centro","d":"San Francisco Tultenco 41, Paulino Navarro","t":[],"x":"Talleres, capacitación y actividades deportivas.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D · A","w":false,"p":false},{"id":"P5","n":"PILARES Parque Abasolo","k":"pilares","a":"Cuauhtémoc","z":"centro","d":"Eje 1 Pte. Guerrero 222, Buenavista (D); ADN40 la registra como “s/n”","t":[],"x":"Talleres artísticos, formación y actividades deportivas.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D · A · W","w":true,"p":false},{"id":"P6","n":"PILARES Avenida del Taller","k":"pilares","a":"Venustiano Carranza","z":"centro","d":"Eje 3 Ote. Francisco del Paso y Troncoso y Av. del Taller s/n, Jardín Balbuena (W)","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A · W","w":true,"p":false},{"id":"P7","n":"PILARES 20 de Noviembre","k":"pilares","a":"Venustiano Carranza","z":"centro","d":"Av. Gran Canal s/n, 5.º Tramo 20 de Noviembre (W)","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A · W","w":true,"p":false},{"id":"P8","n":"PILARES Prohogar","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P9","n":"PILARES San Felipe de Jesús","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P10","n":"PILARES Gertrudis Sánchez","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P11","n":"PILARES San Simón Tolnáhuac","k":"pilares","a":"Cuauhtémoc","z":"centro","d":"Eje 1 Poniente s/n, San Simón Tolnáhuac","t":[],"x":"Actividades culturales, educativas y deportivas.","e":"ADN40 registra en la misma calle y colonia el PILARES “Jacobo Árbenz”: podría ser la misma sede.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D · A · W","w":true,"p":false},{"id":"P12","n":"PILARES Emiliano Zapata","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P13","n":"PILARES Francisco J. Múgica","k":"pilares","a":"Por confirmar (D la agrupa en Benito Juárez / Coyoacán)","z":"confirmar","d":"Canal Nacional 17-B, anexo B, col. Canal Nacional","t":["computacion"],"x":"Talleres artísticos, deporte, ciberescuela y capacitación.","e":"Aparece como “Mújica” y “Múgica”: es una sola sede.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D · A","w":false,"p":false},{"id":"P14","n":"PILARES Gabriela Mistral","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P15","n":"PILARES San Lorenzo Tezonco","k":"pilares","a":"Por confirmar","z":"confirmar","d":"","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A","w":false,"p":false},{"id":"P16","n":"PILARES García Lorca","k":"pilares","a":"Tláhuac","z":"oriente","d":"Cecilio Acosta s/n, San Miguel Zapotitla (W)","t":[],"x":"Oferta de esta sede por confirmar.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"A · W","w":true,"p":false},{"id":"P17","n":"PILARES Deportivo Xóchitl","k":"pilares","a":"Tlalpan","z":"sur","d":"Corregidora s/n, col. Miguel Hidalgo","t":[],"x":"Talleres culturales, deportivos y educativos.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D · A","w":false,"p":false},{"id":"P18","n":"PILARES Municipio Libre","k":"pilares","a":"Benito Juárez","z":"centro","d":"Municipio Libre y Calz. de Tlalpan, Portales Norte","t":["box","ajedrez","dibujo","computacion","costura"],"x":"Box, ajedrez, dibujo, computación y confección textil.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"P19","n":"PILARES Santa Ana Tlacotenco","k":"pilares","a":"Milpa Alta","z":"sur","d":"Privada Olímpica s/n, Santa Ana Tlacotenco","t":[],"x":"Actividades deportivas, artísticas y educativas.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"P20","n":"PILARES Zentlapatl","k":"pilares","a":"Cuajimalpa","z":"poniente","d":"Puerto Escondido 8, Zentlapatl","t":[],"x":"Talleres culturales, deportivos, educativos y capacitación.","e":"","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"P21","n":"PILARES Yancuic","k":"pilares","a":"Iztapalapa","z":"oriente","d":"Dentro del Museo Yancuic, zona Metro Constitución de 1917","t":["computacion","radio"],"x":"Ciberescuela, cabina de radio y talleres.","e":"Operación y programación por confirmar.","f":"confirmar","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":false},{"id":"C1","n":"El Arsenal","k":"cultural","a":"Álvaro Obregón","z":"poniente","d":"Av. Vasco de Quiroga 1401, Santa Fe","t":["ceramica","fotografia","joyeria","diseno-grafico","diseno-moda","serigrafia","vitral"],"x":"Cerámica, encuadernación, fotografía, joyería, esmaltes, diseño, textiles, vestuario, estampado y vitral.","e":"En 2026 publicó 42 talleres gratuitos. Convocatoria y cupo limitado.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"C2","n":"Centro Cultural Xavier Villaurrutia","k":"cultural","a":"Cuauhtémoc","z":"centro","d":"Glorieta de Insurgentes, Roma Norte","t":["musica","danza","escritura","teatro","artes-plasticas","lectura","cine"],"x":"Música, danza, literatura, teatro, artes plásticas y oficios. Clubes de lectura y cineclub.","e":"Consulta su programación de talleres gratuitos.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C3","n":"Pabellón de Cultura Comunitaria","k":"cultural","a":"Miguel Hidalgo","z":"poniente","d":"Av. Constituyentes 270, Ampl. Daniel Garza, 2.ª sección de Chapultepec","t":["musica","teatro","lectura","cine","juegos"],"x":"Música, teatro, lectura, artes y oficios, cine, juegos y creación colectiva.","e":"Sede de Semilleros Creativos, Convite Cultural y Alas y Raíces.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C4","n":"Centro Cultural de España en México","k":"cultural","a":"Cuauhtémoc","z":"centro","d":"República de Guatemala 18 y Donceles 97, Centro Histórico","t":["teatro","cine"],"x":"Programación infantil, talleres creativos, artes escénicas, cine y exposiciones.","e":"No todo es gratuito. Registro según convocatoria.","f":"parcial","ag":"","rq":"Inscripción por convocatoria.","s":"D · T · M","w":false,"p":false},{"id":"C5","n":"Centro Multimedia del CENART","k":"cultural","a":"Coyoacán","z":"sur","d":"Av. Río Churubusco 79, Country Club","t":["animacion","produccion-audiovisual","arte-digital"],"x":"Animación, producción audiovisual, arte digital y experimentación tecnológica.","e":"Convocatorias gratuitas con registro previo.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"C6","n":"Escuela de Cine Comunitario y Fotografía Pohualizcalli","k":"cultural","a":"Iztapalapa","z":"oriente","d":"Av. Ermita Iztapalapa 1385, Barrio San Pablo","t":["fotografia","cine","radio","edicion-video","produccion-audiovisual","escritura"],"x":"Fotografía digital y análoga, cine, radio, edición, guion y video.","e":"Ciclo 2026-2: 10 ago a 12 dic. Inscripción gratuita por convocatoria; presencial, virtual o híbrida.","f":"si","ag":"","rq":"Inscripción por convocatoria.","s":"T · M","w":false,"p":false},{"id":"C7","n":"Museo Diego Rivera Anahuacalli","k":"otro","a":"Coyoacán","z":"sur","d":"Museo 150, San Pablo Tepetlapa","t":["coro","canto","manualidades"],"x":"Coro juvenil y Arte Pro (manualidades).","e":"Coro: de 8 a 17 años. Inscripción previa y cupo limitado. Solo se incluyen estos talleres gratuitos.","f":"parcial","ag":"Coro: de 8 a 17 años.","rq":"Inscripción previa y cupo limitado.","s":"T · M","w":false,"p":false},{"id":"C8","n":"Museo Yancuic","k":"otro","a":"Iztapalapa","z":"oriente","d":"Zona Metro Constitución de 1917","t":["experimentos","medio-ambiente","arte-urbano"],"x":"Ciencia, educación ambiental, arte urbano, arquitectura y actividades interactivas.","e":"Alberga el PILARES Yancuic (P21).","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C9","n":"Casa de Cultura Tlapacaloyan","k":"cultural","a":"Iztapalapa","z":"oriente","d":"Cda. de Morelos s/n esq. Allende, Barrio San Pedro","t":["teatro","artes-plasticas","cartoneria","escritura","acondicionamiento","lenguas-originarias"],"x":"Teatro, artes plásticas, cartonería, escritura creativa, acondicionamiento físico y náhuatl.","e":"Todos sus talleres son gratuitos (Sistema de Información Cultural).","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C10","n":"Biblioteca Vasconcelos","k":"biblioteca","a":"Cuauhtémoc","z":"centro","d":"Eje 1 Norte Mosqueta s/n, Buenavista","t":["lectura","comic","escritura","juegos","manualidades"],"x":"Clubes de lectura, cómic, escritura, collage, ludoteca y bebeteca.","e":"Algunas actividades con entrada libre y otras con registro.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C11","n":"Biblioteca de México","k":"biblioteca","a":"Cuauhtémoc","z":"centro","d":"Plaza de la Ciudadela 4, Centro","t":["lectura","narracion","escritura"],"x":"Lectura, narración oral, talleres literarios y actividades familiares.","e":"Consulta las fechas con entrada libre.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C12","n":"Pabellón Nacional de la Biodiversidad (UNAM)","k":"otro","a":"Coyoacán","z":"sur","d":"Centro Cultural Universitario, Ciudad Universitaria","t":["biodiversidad","animales","plantas","biologia"],"x":"Biodiversidad, animales, plantas, conservación y ciencia.","e":"Mar a dom 10:00–17:00. Talleres gratuitos con registro o según cupo.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C13","n":"Ludoteca Chacuacos","k":"otro","a":"Miguel Hidalgo","z":"poniente","d":"Zona cultural de Chapultepec","t":["juegos","lectura"],"x":"Juegos, lectura y creatividad.","e":"Para infancias y adolescentes. Programa de Alas y Raíces.","f":"si","ag":"Para infancias y adolescentes.","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"C14","n":"Cineteca Nacional (Xoco)","k":"otro","a":"Benito Juárez","z":"centro","d":"Av. México-Coyoacán 389, Xoco","t":["cine"],"x":"Espacios de convivencia y programación cultural.","e":"Las funciones y algunas exposiciones tienen costo.","f":"parcial","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"C15","n":"Cineteca Nacional Chapultepec","k":"otro","a":"Álvaro Obregón","z":"poniente","d":"Cuarta Sección del Bosque de Chapultepec","t":["cine"],"x":"Proyecciones gratuitas en algunos ciclos y programación cultural.","e":"Consulta qué ciclos son gratuitos.","f":"parcial","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"O1","n":"Deportivo Oceanía","k":"otro","a":"Venustiano Carranza","z":"centro","d":"Av. Oceanía s/n, Pensador Mexicano","t":[],"x":"Canchas y espacios deportivos.","e":"Algunas instalaciones pueden tener costo: pregunta cuáles son gratuitas.","f":"parcial","ag":"","rq":"Consulta los requisitos en la sede.","s":"D","w":false,"p":false},{"id":"R1","n":"Red PILARES CDMX","k":"otro","a":"Varias alcaldías","z":"varias","d":"Cerca de 300 espacios en las 16 alcaldías","t":["danza-folclorica","danza","box","yoga","ajedrez","acondicionamiento","guitarra","canto","teatro","dibujo","pintura","computacion","programacion","costura","bordado","experimentos","futbol"],"x":"Baile, danza folclórica, box, yoga, ajedrez, guitarra, canto, teatro, dibujo, computación, programación, costura, bordado, apoyo educativo y ciencia comunitaria.","e":"Gratuito. Localiza tu sede e inscríbete en PILARES CDMX. Viernes de 2026: ciencia comunitaria.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · A","w":false,"p":true},{"id":"R2","n":"Ponte Pila 2026","k":"otro","a":"Varias alcaldías","z":"varias","d":"Parques, deportivos y centros comunitarios","t":["acondicionamiento","danza"],"x":"Activación física, acondicionamiento y baile deportivo.","e":"Inscripción con promotores deportivos y programación local.","f":"confirmar","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R3","n":"Muévete en Bici","k":"otro","a":"Varias alcaldías","z":"varias","d":"Rutas dominicales (incluye Paseo de la Reforma)","t":["ciclismo"],"x":"Ciclismo, talleres y dinámicas recreativas.","e":"Gratuito. Consulta la ruta y los módulos de cada domingo (SEMOVI).","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R4","n":"Biciescuela CDMX","k":"otro","a":"Varias alcaldías","z":"varias","d":"Módulos: Eje 7 Sur, Reforma, La Villa y Torre del Caballito","t":["ciclismo"],"x":"Aprender a andar en bici, equilibrio y seguridad vial.","e":"Gratuito: prestan bici y casco. Consulta módulos y horarios dominicales.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R5","n":"Semilleros Creativos","k":"otro","a":"Varias alcaldías","z":"varias","d":"Sedes comunitarias de CDMX y Edomex","t":["teatro","danza","pintura","fotografia","musica","escritura","circo"],"x":"Teatro, danza, pintura, fotografía, música, literatura y circo.","e":"Para niñas, niños y adolescentes. Gratuito.","f":"si","ag":"Para niñas, niños y adolescentes.","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R6","n":"Alas y Raíces","k":"otro","a":"Varias alcaldías","z":"varias","d":"Bibliotecas, museos y recintos culturales","t":["narracion","musica","danza","teatro","juegos","lectura"],"x":"Narración oral, música, danza, teatro, juegos y lectura.","e":"Para infancias y adolescentes. Programación gratuita.","f":"si","ag":"Para infancias y adolescentes.","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R7","n":"Red de Libro Clubes","k":"otro","a":"Varias alcaldías","z":"varias","d":"Bibliotecas, parques, hospitales y centros comunitarios","t":["lectura","escritura","narracion"],"x":"Círculos de lectura, escritura creativa y narración.","e":"Participación gratuita.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R8","n":"Ludotecas Comunitarias","k":"otro","a":"Varias alcaldías","z":"varias","d":"FAROS y otros centros culturales","t":["juegos","lectura","musica","canto","artes-plasticas"],"x":"Juegos, lectura, música, canto y artes plásticas.","e":"Principalmente para menores de 12 años.","f":"si","ag":"Principalmente para menores de 12 años.","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R9","n":"Cine en la Ciudad","k":"otro","a":"Varias alcaldías","z":"varias","d":"Red de 62 sedes","t":["cine"],"x":"Funciones de cine y actividades de acercamiento al cine.","e":"Gratuito. Consulta el directorio de sedes.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R10","n":"Mercado de Trueque (SEDEMA)","k":"otro","a":"Varias alcaldías","z":"varias","d":"Itinerante: Bosque de Tlalpan, Parque Ecológico de Xochimilco, Bosque de San Juan de Aragón y Parque Tezozómoc","t":["reciclaje","medio-ambiente"],"x":"Educación ambiental, separación de residuos y reciclaje.","e":"Próxima fecha anunciada: 13 de diciembre de 2026, Parque Tezozómoc (Azcapotzalco).","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"R11","n":"Escritoras y Escritores de Mi Barrio","k":"otro","a":"Varias alcaldías","z":"varias","d":"UTOPÍAS y espacios comunitarios","t":["escritura","lectura"],"x":"Escritura creativa, creación literaria, lectura y encuentros con escritores.","e":"Contacto publicado: talleresutopia2026@gmail.com","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"M1","n":"Parque Ecológico Lago de Texcoco","k":"otro","a":"Texcoco, Edomex","z":"metro","d":"Autopista Peñón-Texcoco","t":["futbol","basquetbol","beisbol","voleibol","skate","parkour","ciclismo","calistenia","animales","naturaleza","medio-ambiente"],"x":"Escuelas de fútbol, básquetbol, béisbol y voleibol; skate, parkour y ciclismo; observación de aves.","e":"Mar a dom 7:00–19:00. Talleres ambientales gratuitos; escuelas deportivas por formulario.","f":"parcial","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"M2","n":"Centro Cultural Mexiquense Bicentenario","k":"cultural","a":"Texcoco, Edomex","z":"metro","d":"Carr. Fed. Los Reyes-Texcoco km 14.3, San Miguel Coatlinchán","t":["lectura","juegos","artes-plasticas","ilustracion"],"x":"Lectura creativa, juegos didácticos, artes e ilustración. Biblioteca y ludoteca.","e":"Consulta sus próximas convocatorias gratuitas.","f":"confirmar","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"M3","n":"Central de Abasto de Ecatepec","k":"otro","a":"Ecatepec, Edomex","z":"metro","d":"Central de Abasto, Ecatepec de Morelos","t":["pintura","computacion","danza-folclorica","artes-marciales"],"x":"Pintura, computación, danza folclórica y taekwondo.","e":"Para trabajadores, visitantes y familias de la comunidad.","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"M4","n":"Centro de Desarrollo Comunitario La Joya","k":"otro","a":"Ecatepec, Edomex","z":"metro","d":"Colonia La Joya, Ecatepec de Morelos","t":["costura"],"x":"Corte y confección.","e":"Teléfono publicado: 55 2462 1476 (Bienestar Ecatepec).","f":"si","ag":"","rq":"Consulta los requisitos en la sede.","s":"T · M","w":false,"p":false},{"id":"M5","n":"Talleres de emprendimiento de Tlalnepantla","k":"otro","a":"Tlalnepantla, Edomex","z":"varias","d":"Diferentes comunidades del municipio","t":["joyeria","cocina","reposteria"],"x":"Bisutería, gastronomía y dulces mexicanos.","e":"La convocatoria localizada fue en septiembre: consulta el siguiente ciclo.","f":"confirmar","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true},{"id":"M6","n":"Cultura Comunitaria del Estado de México","k":"otro","a":"Edomex","z":"varias","d":"Sedes en Ecatepec, Tlalnepantla y Naucalpan","t":["artes-plasticas","musica","escritura"],"x":"Talleres artísticos, música, literatura y artes visuales.","e":"Consulta la cartelera de cada municipio.","f":"confirmar","ag":"","rq":"Consulta los requisitos en la sede.","s":"T","w":false,"p":true}];
+const FECHA='23 nov 2026';
+
+const A={};ACTS.trim().split('\n').forEach(l=>{const [c,id,n,d,r]=l.split('|');A[id]={id,c,n,d,r:r.trim().split(/\s+/)}});
+const slug=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const I=[];for(const c in INTS)INTS[c].split('|').forEach(x=>{const [n,t]=x.split(':');I.push({id:c+'-'+slug(n),n,c,t:t.split(' ')})});
+const IM=Object.fromEntries(I.map(x=>[x.id,x]));
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const placeCount={};PLACES.forEach(p=>p.t.forEach(t=>placeCount[t]=(placeCount[t]||0)+1));
+
+/* ================= ICONOS ================= */
+const ICON={
+palette:'<path d="M-18 2C-18-14-4-20 8-16C18-13 20-4 14 0C9 3 12 8 8 12C2 18-18 16-18 2Z" fill="#FFFDF7" stroke="#171717" stroke-width="3"/><circle cx="-9" cy="-5" r="4" fill="#315BEB"/><circle cx="0" cy="-10" r="4" fill="#D9FF43" stroke="#171717" stroke-width="1.5"/><circle cx="-10" cy="6" r="4" fill="#9D79E8"/><path d="M6 12L22-12" stroke="#171717" stroke-width="5" stroke-linecap="round"/>',
+guitar:'<path d="M2-2L16-22" stroke="#171717" stroke-width="5" stroke-linecap="round"/><circle cx="2" cy="-2" r="9" fill="#FF7949" stroke="#171717" stroke-width="3"/><circle cx="-6" cy="8" r="12" fill="#FF7949" stroke="#171717" stroke-width="3"/><circle cx="-4" cy="5" r="3.5" fill="#171717"/>',
+dance:'<circle cy="-17" r="6" fill="#171717"/><path d="M0-10V6M0-6L-13-20M0-6L14-16M-4 14L-10 24M4 14L12 18L8 25" stroke="#171717" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M-12 4H12L16 14H-16Z" fill="#FF7949" stroke="#171717" stroke-width="2.5"/>',
+ball:'<circle r="18" fill="#FFFDF7" stroke="#171717" stroke-width="3"/><circle r="6" fill="#171717"/><path d="M0-6V-17M6 2L16 7M-6 2L-16 7" stroke="#171717" stroke-width="2.5"/>',
+laptop:'<rect x="-17" y="-15" width="34" height="22" rx="3" fill="#FFFDF7" stroke="#FFFDF7" stroke-width="3"/><path d="M-11-8H-1M-11-2H7" stroke="#FF7949" stroke-width="3" stroke-linecap="round"/><path d="M-22 9H22L19 15H-19Z" fill="#D9FF43"/>',
+flask:'<path d="M-7-20V-6L-19 15C-21 19-18 23-14 23H14C18 23 21 19 19 15L7-6V-20Z" fill="#FFFDF7" stroke="#171717" stroke-width="3" stroke-linejoin="round"/><path d="M-14 10H14L18 16C20 20 17 22 14 22H-14C-17 22-20 20-18 16Z" fill="#315BEB"/><path d="M-10-20H10" stroke="#171717" stroke-width="4" stroke-linecap="round"/>',
+pot:'<path d="M-6-10C-10-15-2-18-6-24M6-10C2-15 10-18 6-24" stroke="#171717" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M-17-1H17V8C17 14 12 17 6 17H-6C-12 17-17 14-17 8Z" fill="#171717"/><path d="M-19-4H19" stroke="#171717" stroke-width="3" stroke-linecap="round"/>',
+book:'<path d="M-19-11L0-6L19-11V12L0 17L-19 12Z" fill="#FFFDF7" stroke="#171717" stroke-width="3" stroke-linejoin="round"/><path d="M0-6V17M-14-2L-5 0M5 0L14-2" stroke="#171717" stroke-width="2.5" stroke-linecap="round"/>',
+hands:'<path d="M0 18C-24 2-18-18-6-14C-2-13 0-9 0-7C0-9 2-13 6-14C18-18 24 2 0 18Z" fill="#FF7949" stroke="#171717" stroke-width="3" stroke-linejoin="round"/>'};
+const ico=(c,size)=>{const k=CATS[c];return `<span class="ic" style="background:${k.c}"><svg viewBox="-26 -26 52 52" aria-hidden="true">${ICON[k.i]}</svg></span>`};
+const CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5L6.5 12L13 4.5" fill="none" stroke="#D9FF43" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ================= ESTADO ================= */
+const STEPS=['Bienvenida','¿Qué te gusta?','Ideas para ti','Dónde hacerlo','Mi plan','Mi universo'];
+const blank=()=>({step:0,q:'',cat:'todas',ints:[],unsure:false,more:false,acts:[],zone:'todas',alc:'',kind:'todos',off:[],place:null,plMore:false,optMore:false,learn:'',first:'',firstOther:'',helper:'',reset:false});
+let S=blank();
+const has=(arr,x)=>arr.includes(x);
+const tog=(arr,x)=>has(arr,x)?arr.filter(y=>y!==x):[...arr,x];
+
+/* ================= RECOMENDACIONES (por etiquetas) ================= */
+function recommend(){
+ const sc={},why={};
+ for(const iid of S.ints){const it=IM[iid];
+  it.t.forEach(t=>{sc[t]=(sc[t]||0)+5;(why[t]=why[t]||new Set).add(it.n);
+   (A[t]?A[t].r:[]).forEach(r=>{sc[r]=(sc[r]||0)+2;(why[r]=why[r]||new Set).add(it.n);
+    (A[r]?A[r].r:[]).forEach(r2=>{sc[r2]=(sc[r2]||0)+0.5;(why[r2]=why[r2]||new Set).add(it.n)})})})}
+ return Object.keys(sc).filter(k=>A[k]).sort((a,b)=>sc[b]-sc[a]||(placeCount[b]||0)-(placeCount[a]||0)||A[a].n.localeCompare(A[b].n)).map(k=>({a:A[k],s:sc[k],w:[...why[k]]}));
+}
+function chosenActs(){if(S.acts.length)return S.acts;const s=new Set();S.ints.forEach(i=>IM[i].t.forEach(t=>s.add(t)));return [...s]}
+
+/* ================= LUGARES ================= */
+const KINDS={faro:'FARO',pilares:'PILARES',utopia:'UTOPÍA',biblioteca:'Biblioteca',cultural:'Centro cultural',otro:'Otro'};
+const ZONES=['todas','norte','centro','sur','oriente','poniente'];
+const ZN={norte:'Norte',centro:'Centro',sur:'Sur',oriente:'Oriente',poniente:'Poniente',metro:'Zona Metropolitana',varias:'Varias sedes',confirmar:'Zona por confirmar'};
+const ALCS=[...new Set(PLACES.filter(p=>!p.p&&p.z!=='confirmar'&&p.z!=='metro').map(p=>p.a))].sort((a,b)=>a.localeCompare(b));
+function findPlaces(){
+ const act=chosenActs().filter(a=>!has(S.off,a));
+ const rel=new Set();act.forEach(a=>(A[a]?A[a].r:[]).forEach(r=>{if(!act.includes(r))rel.add(r)}));
+ const pass=p=>{
+  if(S.kind!=='todos'&&p.k!==S.kind)return false;
+  if(S.alc&&!p.p&&p.a!==S.alc)return false;
+  if(S.zone!=='todas'&&!p.p&&p.z!==S.zone)return false;
+  if(S.zone!=='todas'&&p.z==='metro')return false;
+  return true};
+ const base=p=>(p.d&&p.z!=='confirmar'?10:0)+(p.w?0:3)+(p.f==='si'?4:p.f==='parcial'?1:0)+(p.p?0:3)+(S.alc&&p.a===S.alc?30:0)+(S.zone!=='todas'&&p.z===S.zone?15:0);
+ const main=[],alt=[];
+ PLACES.filter(pass).forEach(p=>{
+  const hit=p.t.filter(t=>act.includes(t));
+  if(hit.length)main.push({p,hit,s:hit.length*100+base(p)});
+  else{const rh=p.t.filter(t=>rel.has(t));if(rh.length)alt.push({p,hit:rh,s:rh.length*100+base(p)})}});
+ main.sort((a,b)=>b.s-a.s);alt.sort((a,b)=>b.s-a.s);
+ return {act,main,alt};
+}
+const mapsUrl=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([p.n,p.d,p.a,p.z==='metro'?'Estado de México':'Ciudad de México'].filter(Boolean).join(', '));
+const searchUrl=p=>'https://www.google.com/search?q='+encodeURIComponent(p.n+' sitio oficial');
+const FREE={si:'Gratis, según los documentos del proyecto.',parcial:'Parte de su oferta tiene costo: pregunta qué es gratis.',confirmar:'Confirma si es gratis antes de ir.'};
+
+/* ================= PANTALLAS ================= */
+function scene(){
+ const F=(x,y,skin,shirt,arm,prop)=>`<g transform="translate(${x} ${y})"><path d="M-6 0L-11 38M6 0L11 38" stroke="#171717" stroke-width="9" stroke-linecap="round"/><rect x="-16" y="-46" width="32" height="50" rx="13" fill="${shirt}" stroke="#171717" stroke-width="3"/><path d="M-13-38L-28-16M13-38${arm}" stroke="#171717" stroke-width="8" stroke-linecap="round" fill="none"/><circle cy="-63" r="15" fill="${skin}" stroke="#171717" stroke-width="2.5"/><path d="M-15-65C-17-83 15-85 15-66C9-74-7-74-15-65Z" fill="#171717"/>${prop}</g>`;
+ const P=(x,y,k,s)=>`<g transform="translate(${x} ${y}) scale(${s||1})">${ICON[k]}</g>`;
+ return `<svg viewBox="0 0 520 440" role="img" aria-label="Planeta con personas jugando fútbol, tocando guitarra, bailando, cocinando, haciendo ciencia, tomando fotos, pintando, cuidando plantas y usando una computadora">
+<ellipse cx="260" cy="250" rx="245" ry="150" fill="none" stroke="#171717" stroke-width="3" stroke-dasharray="3 10" stroke-linecap="round"/>
+<circle cx="270" cy="258" r="150" fill="#171717"/><circle cx="260" cy="248" r="150" fill="#D9FF43" stroke="#171717" stroke-width="5"/>
+<circle cx="330" cy="170" r="14" fill="none" stroke="#171717" stroke-width="3"/><circle cx="190" cy="330" r="9" fill="none" stroke="#171717" stroke-width="3"/>
+${F(200,262,'#8D5524','#315BEB','L34-52','<circle cx="30" cy="34" r="12" fill="#FFFDF7" stroke="#171717" stroke-width="3"/><circle cx="30" cy="34" r="4" fill="#171717"/>')}
+${F(300,262,'#E0AC69','#FF7949','L30-12',P(4,-20,'guitar',1))}
+${F(250,370,'#C68642','#9D79E8','L32-62','')}
+${P(70,140,'flask',1.4)}${P(455,140,'laptop',1.4)}${P(60,330,'palette',1.4)}${P(460,330,'pot',1.4)}${P(150,60,'ball',1.1)}${P(380,60,'book',1.3)}
+<g transform="translate(470 230)"><rect x="-18" y="-10" width="36" height="26" rx="6" fill="#171717"/><circle cy="3" r="8" fill="#D9FF43" stroke="#FFFDF7" stroke-width="3"/></g>
+<g transform="translate(40 235)"><path d="M0 18V-4M0 2C-12-2-14-14-10-18C-2-16 2-8 0 2ZM0-2C10-8 16-4 16 2C8 6 2 4 0-2Z" fill="#9D79E8" stroke="#171717" stroke-width="3"/><rect x="-12" y="16" width="24" height="14" rx="3" fill="#FF7949" stroke="#171717" stroke-width="3"/></g>
+<path d="M260 20Q260 42 282 42Q260 42 260 64Q260 42 238 42Q260 42 260 20Z" fill="#171717"/><path d="M490 400Q490 412 502 412Q490 412 490 424Q490 412 478 412Q490 412 490 400Z" fill="#315BEB"/>
+</svg>`}
+function s0(){return `<section class="screen pop"><div class="hero"><div>
+<p class="eyebrow">DESCUBRE LO QUE TE GUSTA. ENCUENTRA DÓNDE EMPEZAR.</p>
+<h1 class="h1">¿Y SI DESCUBRES ALGO QUE TE ENCANTA?</h1>
+<p class="lead">Hay miles de cosas por descubrir. Vamos a encontrar algunas que te gusten.</p>
+<p style="margin:22px 0 14px"><button class="btn" data-a="go" data-v="1" data-k="start" style="font-size:20px;min-height:60px">¡QUIERO EXPLORAR!</button></p>
+<p class="privacy">No pedimos tu nombre ni tus datos. Todo se queda en este dispositivo. Toma de 5 a 10 minutos.</p>
+</div><div>${scene()}</div></div></section>`}
+function intCard(it){const on=has(S.ints,it.id);return `<button class="card" data-a="int" data-v="${it.id}" data-k="i-${it.id}" aria-pressed="${on}">${ico(it.c)}<span class="nm">${esc(it.n)}</span><span class="ok">${CHECK}</span></button>`}
+function s1(){
+ const q=norm(S.q.trim());
+ let list=I.filter(it=>(S.cat==='todas'||it.c===S.cat)&&(!q||norm(it.n).includes(q)||it.t.some(t=>A[t]&&norm(A[t].n).includes(q))));
+ let body='';
+ if(!list.length)body=`<div class="empty">No encontramos “${esc(S.q)}”. Prueba con otra palabra o toca “Sorpréndeme”.</div>`;
+ else if(S.cat==='todas'&&!q){for(const c in CATS){const l=list.filter(x=>x.c===c);body+=`<div class="cathead">${ico(c)}<h3>${CATS[c].n}</h3></div><div class="grid">${l.map(intCard).join('')}</div>`}}
+ else body=`<div class="grid" style="margin-top:12px">${list.map(intCard).join('')}</div>`;
+ const starters=Object.keys(CATS).map(c=>I.find(x=>x.c===c));
+ return `<section class="screen pop"><p class="eyebrow">PASO 2 DE 6</p><h1 class="h2">¿QUÉ COSAS TE GUSTAN O TE DAN CURIOSIDAD?</h1>
+<p class="lead">Elige todas las que quieras. ¡También puedes probar algo nuevo!</p>
+<div class="search"><label class="sr" for="q">Buscar intereses</label><input id="q" data-k="q" type="search" placeholder="Busca: fútbol, cocina, robots…" value="${esc(S.q)}" autocomplete="off"></div>
+<div class="chips" role="group" aria-label="Filtrar por categoría"><button class="chip" data-a="cat" data-v="todas" data-k="c-todas" aria-pressed="${S.cat==='todas'}">Todas</button>${Object.keys(CATS).map(c=>`<button class="chip" data-a="cat" data-v="${c}" data-k="c-${c}" aria-pressed="${S.cat===c}">${CATS[c].n}</button>`).join('')}</div>
+<div class="chips" style="margin-top:12px"><button class="btn sec sm" data-a="unsure" data-k="unsure">No sé todavía</button><button class="btn coral sm" data-a="surprise" data-k="surprise">Sorpréndeme</button></div>
+${S.unsure?`<div class="note lime">¡No pasa nada! Nadie tiene que saberlo todo. Elige una o dos cosas que te den curiosidad, aunque nunca las hayas probado:<div class="grid" style="margin-top:12px">${starters.map(intCard).join('')}</div></div>`:''}
+${body}</section>`}
+function s2(){
+ if(!S.ints.length)return `<section class="screen pop"><h1 class="h2">¡MIRA TODO LO QUE PODRÍA GUSTARTE!</h1><div class="empty" style="margin-top:20px">Todavía no elegiste intereses. Regresa y elige al menos uno, o toca “Sorpréndeme”.<p><button class="btn" data-a="go" data-v="1" data-k="back1">Elegir intereses</button></p></div></section>`;
+ const r=recommend(),n=S.more?24:12,shown=r.slice(0,n);
+ return `<section class="screen pop"><p class="eyebrow">PASO 3 DE 6</p><h1 class="h2">¡MIRA TODO LO QUE PODRÍA GUSTARTE!</h1>
+<p class="lead">Elige lo que te gustaría intentar.</p>
+<div class="pills" aria-label="Tus intereses">${S.ints.map(i=>`<span>${esc(IM[i].n)}</span>`).join('')}</div>
+<div class="recs">${shown.map(x=>{const on=has(S.acts,x.a.id);return `<button class="card rec" data-a="act" data-v="${x.a.id}" data-k="a-${x.a.id}" aria-pressed="${on}">${ico(x.a.c)}<span class="nm">${esc(x.a.n)}</span><span class="ds">${esc(x.a.d)}</span><span class="why">Porque elegiste ${esc(x.w.slice(0,2).join(' y '))}</span><span class="pick">${on?'¡Lo quiero intentar!':'Tocar para elegir'}</span><span class="ok">${CHECK}</span></button>`}).join('')}</div>
+${r.length>n?`<p style="margin-top:18px"><button class="btn sec" data-a="more" data-k="more">Ver más ideas</button></p>`:''}
+<p class="note" style="margin-top:22px">Son ideas relacionadas con lo que elegiste, no un examen ni una etiqueta sobre ti.</p></section>`}
+function zoneMap(counts){
+ const Z=[['norte',260,70,150,58],['poniente',95,185,95,80],['centro',255,185,105,72],['oriente',415,205,95,90],['sur',250,315,150,52]];
+ return `<svg viewBox="0 0 520 380" aria-hidden="true">${Z.map(([z,x,y,rx,ry])=>`<ellipse cx="${x+5}" cy="${y+5}" rx="${rx}" ry="${ry}" fill="#171717"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${S.zone===z?'#D9FF43':'#FFFDF7'}" stroke="#171717" stroke-width="4"/><text x="${x}" y="${y-4}" text-anchor="middle" font-family="Archivo Black,sans-serif" font-size="22" fill="#171717">${ZN[z].toUpperCase()}</text><text x="${x}" y="${y+22}" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="16" fill="#171717">${counts[z]||0} lugares</text>`).join('')}</svg>`}
+function placeCard(x,alt){const p=x.p,sel=S.place===p.id;
+ const tags=p.t.map(t=>`<span class="tag ${x.hit.includes(t)?'hit':''}">${esc(A[t]?A[t].n:t)}</span>`).join(' ');
+ const where=p.p?'Programa en varias sedes':(esc(p.a)+' · '+(ZN[p.z]||''));
+ return `<article class="pl ${sel?'sel':''}"><span class="kind k-${p.k}">${KINDS[p.k]}${p.p?' · PROGRAMA':''}</span><h3>${esc(p.n)}</h3>
+<p class="meta">${where}</p>
+<p><b>Dirección:</b> ${p.d?esc(p.d):'<b>por confirmar</b>'}</p>
+${alt?`<p><b>Alternativa:</b> ofrece actividades parecidas.</p>`:''}
+<p>${tags||'<span class="tag">Oferta por confirmar</span>'}</p>
+<p class="free">${FREE[p.f]}</p>
+<p>Consulta si hay talleres disponibles.${p.e?' '+esc(p.e):''}</p>
+<p><b>Edades:</b> ${p.ag?esc(p.ag):'confírmalas en la sede.'} <b>Inscripción:</b> ${esc(p.rq)}</p>
+<p class="meta">Fuente: ${esc(p.s)} · Datos al ${FECHA}${p.w?' · incluye datos de investigación adicional por verificar':''}. Enlace oficial: por verificar.</p>
+<div class="row">${p.p?'':`<a class="btn blue sm" href="${mapsUrl(p)}" target="_blank" rel="noopener">VER CÓMO LLEGAR</a>`}<button class="btn sm ${sel?'':'sec'}" data-a="place" data-v="${p.id}" data-k="p-${p.id}" aria-pressed="${sel}">${sel?'✓ ELEGIDO':'ELEGIR ESTE LUGAR'}</button><a class="btn sec sm" href="${searchUrl(p)}" target="_blank" rel="noopener">Buscar sitio oficial</a></div></article>`}
+function s3(){
+ const R=findPlaces(),all=chosenActs();
+ const counts={};R.main.forEach(x=>{counts[x.p.z]=(counts[x.p.z]||0)+1});
+ const n=S.plMore?60:12;
+ let res='';
+ if(!all.length)res=`<div class="empty">Aún no elegiste actividades. Regresa y elige alguna para ver lugares.<p><button class="btn" data-a="go" data-v="2" data-k="b2">Ver ideas</button></p></div>`;
+ else if(!R.act.length)res=`<div class="empty">Apagaste todas las actividades. Activa al menos una arriba.</div>`;
+ else{
+  res=`<p class="note" style="margin-top:0"><b>${R.main.length}</b> lugares con lo que elegiste${R.alt.length?` y ${R.alt.length} alternativas`:''}.</p>`;
+  if(R.main.length)res+=`<div class="places">${R.main.slice(0,n).map(x=>placeCard(x,false)).join('')}</div>`+(R.main.length>n?`<p style="margin-top:16px"><button class="btn sec" data-a="plmore" data-k="plmore">Ver más lugares</button></p>`:'');
+  else res+=`<div class="empty">No encontramos lugares documentados para esa actividad con estos filtros. Prueba “Todas” las zonas o mira las alternativas.</div>`;
+  if(R.alt.length)res+=`<h2 class="sub">Alternativas con actividades parecidas</h2><p>Estos lugares no tienen documentada tu actividad, pero sí algo relacionado.</p><div class="places" style="margin-top:12px">${R.alt.slice(0,S.plMore?40:6).map(x=>placeCard(x,true)).join('')}</div>`;
+  if(!R.main.length&&!R.alt.length&&(S.zone!=='todas'||S.alc||S.kind!=='todos'))res+=`<p style="margin-top:12px"><button class="btn" data-a="clear" data-k="clear">Quitar filtros</button></p>`;
+ }
+ return `<section class="screen pop"><p class="eyebrow">PASO 4 DE 6</p><h1 class="h2">¡HAY LUGARES DONDE PUEDES EMPEZAR!</h1>
+<p class="lead">Descubre espacios donde puedes aprender y probar cosas nuevas.</p>
+<p class="note coral">Si eres menor de edad, pide ayuda a una persona adulta de confianza antes de visitar un lugar o inscribirte.</p>
+<div class="filters"><div class="fz"><div><h3>¿QUÉ ZONA TE QUEDA MEJOR?</h3><div class="chips" role="group" aria-label="Zona">${ZONES.map(z=>`<button class="chip" data-a="zone" data-v="${z}" data-k="z-${z}" aria-pressed="${S.zone===z}">${z==='todas'?'Todas':ZN[z]}</button>`).join('')}</div>
+<h3 style="margin-top:14px"><label for="alc">¿O cerca de qué alcaldía?</label></h3><select id="alc" data-k="alc"><option value="">Cualquier alcaldía</option>${ALCS.map(a=>`<option ${S.alc===a?'selected':''}>${esc(a)}</option>`).join('')}</select></div>
+<div class="zmap"><p class="meta" style="margin:0 0 4px;font-size:13px;font-weight:600">Mapa por zonas (no exacto)</p>${zoneMap(counts)}</div></div>
+${all.length?`<div><h3>¿QUÉ QUIERES HACER?</h3><div class="chips" role="group" aria-label="Actividades">${all.map(a=>`<button class="chip" data-a="off" data-v="${a}" data-k="o-${a}" aria-pressed="${!has(S.off,a)}">${esc(A[a]?A[a].n:a)}</button>`).join('')}</div></div>`:''}
+<div><h3>¿QUÉ TIPO DE LUGAR?</h3><div class="chips" role="group" aria-label="Tipo de lugar"><button class="chip" data-a="kind" data-v="todos" data-k="k-todos" aria-pressed="${S.kind==='todos'}">Todos</button>${Object.keys(KINDS).map(k=>`<button class="chip" data-a="kind" data-v="${k}" data-k="k-${k}" aria-pressed="${S.kind===k}">${KINDS[k]}</button>`).join('')}</div></div></div>
+${res}</section>`}
+const FIRST=['Preguntar por horarios','Investigar cómo llegar','Pedir ayuda para inscribirme','Visitar el lugar con alguien de confianza','Otra idea'];
+const HELP=['Alguien de mi familia','Una maestra o un maestro','Una amiga o un amigo','Alguien de mi comunidad','Otra persona de confianza'];
+const placeObj=()=>PLACES.find(p=>p.id===S.place);
+function placeOptions(sel){
+ const act=chosenActs(),rel=new Set();act.forEach(a=>(A[a]?A[a].r:[]).forEach(r=>{if(!act.includes(r))rel.add(r)}));
+ const free=PLACES.filter(p=>p.f==='si'&&(S.zone==='todas'||p.p||p.z===S.zone));
+ const rank=p=>(p.d&&p.z!=='confirmar'?10:0)+(p.p?0:3)+(p.w?0:2);
+ const g1=[],g2=[],g3=[];
+ free.forEach(p=>{const h=p.t.filter(t=>act.includes(t));if(h.length){g1.push({p,h,s:h.length*100+rank(p)});return}
+  const r=p.t.filter(t=>rel.has(t));if(r.length)g2.push({p,h:r,s:r.length*100+rank(p)});else g3.push({p,h:[],s:rank(p)})});
+ [g1,g2,g3].forEach(g=>g.sort((a,b)=>b.s-a.s||a.p.n.localeCompare(b.p.n)));
+ const opt=x=>{const p=x.p,on=S.place===p.id;return `<div class="optc ${on?'on':''}"><button type="button" class="opt" role="radio" aria-checked="${on}" data-a="place" data-v="${p.id}" data-k="po-${p.id}"><span class="dot"></span><span><span style="display:block">${esc(p.n)}</span><span class="meta" style="display:block;font-weight:600;font-size:13px">${p.p?'Programa en varias sedes':esc(p.a)+' · '+(ZN[p.z]||'')}${x.h.length?' · '+x.h.map(t=>esc(A[t].n)).join(', '):''}</span></span></button>${p.p?'':`<a class="lk" href="${mapsUrl(p)}" target="_blank" rel="noopener">Cómo llegar</a>`}</div>`};
+ const list=(g,n)=>`<div class="opts">${g.slice(0,n).map(opt).join('')}</div>`;
+ const selP=sel&&!g1.concat(g2,g3).some(x=>x.p.id===sel.id)?`<div class="opts">${opt({p:sel,h:sel.t.filter(t=>act.includes(t))})}</div>`:'';
+ return `<span class="qtitle" id="pq">¿DÓNDE PODRÍAS HACERLO?</span>
+<p style="margin:0 0 10px;font-weight:600">Elige un lugar gratuito. Puedes cambiarlo cuando quieras; no es obligatorio.</p>
+<div class="chips" role="group" aria-label="Zona" style="margin-bottom:12px">${ZONES.map(z=>`<button type="button" class="chip" data-a="zone" data-v="${z}" data-k="pz-${z}" aria-pressed="${S.zone===z}">${z==='todas'?'Todas las zonas':ZN[z]}</button>`).join('')}</div>
+<div role="radiogroup" aria-labelledby="pq">${selP}
+${g1.length?`<h3 class="sub" style="font-size:18px;margin:14px 0 8px">Para lo que elegiste (${g1.length})</h3>${list(g1,99)}`:`<p class="note" style="margin:0 0 10px">No hay lugares gratuitos documentados para tus actividades en esta zona. Mira las opciones de abajo.</p>`}
+${g2.length?`<h3 class="sub" style="font-size:18px;margin:18px 0 8px">Con actividades parecidas (${g2.length})</h3>${list(g2,S.optMore?99:6)}`:''}
+${g3.length?`<h3 class="sub" style="font-size:18px;margin:18px 0 8px">Otros lugares gratuitos (${g3.length})</h3>${S.optMore?list(g3,99):''}`:''}
+${(g2.length>6||g3.length)&&!S.optMore?`<p style="margin-top:12px"><button type="button" class="btn sec sm" data-a="optmore" data-k="optmore">Ver todos los lugares gratuitos (${g1.length+g2.length+g3.length})</button></p>`:''}
+</div>
+<p class="meta" style="font-size:13px;font-weight:600;margin-top:10px">Gratis según los documentos del proyecto (${FECHA}). Consulta si hay talleres disponibles antes de ir.</p>`}
+function s4(){const p=placeObj(),acts=chosenActs();
+ return `<section class="screen pop"><p class="eyebrow">PASO 5 DE 6</p><h1 class="h2">¡YA TIENES UNA NUEVA AVENTURA!</h1>
+<div class="pills">${S.ints.map(i=>`<span>${esc(IM[i].n)}</span>`).join('')}${p?`<span style="background:#D9FF43">${esc(p.n)}</span>`:''}</div>
+<div class="steps3" style="margin-top:18px"><svg viewBox="0 0 520 170" role="img" aria-label="Tres escalones que llevan a una bandera: la meta"><rect x="20" y="120" width="140" height="40" fill="#FFFDF7" stroke="#171717" stroke-width="4"/><rect x="160" y="80" width="140" height="80" fill="#FFFDF7" stroke="#171717" stroke-width="4"/><rect x="300" y="40" width="140" height="120" fill="#FFFDF7" stroke="#171717" stroke-width="4"/><rect x="20" y="120" width="140" height="10" fill="#D9FF43" stroke="#171717" stroke-width="4"/><rect x="160" y="80" width="140" height="10" fill="#9D79E8" stroke="#171717" stroke-width="4"/><rect x="300" y="40" width="140" height="10" fill="#FF7949" stroke="#171717" stroke-width="4"/><text x="90" y="152" text-anchor="middle" font-family="Archivo Black" font-size="22">1</text><text x="230" y="130" text-anchor="middle" font-family="Archivo Black" font-size="22">2</text><text x="370" y="110" text-anchor="middle" font-family="Archivo Black" font-size="22">3</text><path d="M470 160V20" stroke="#171717" stroke-width="5"/><path d="M472 22L512 34L472 48Z" fill="#D9FF43" stroke="#171717" stroke-width="3"/></svg></div>
+<form class="form" data-k="form" onsubmit="return false">
+<div><label for="learn">¿QUÉ QUIERES APRENDER?</label><input type="text" id="learn" data-k="learn" maxlength="120" placeholder="${esc(acts[0]&&A[acts[0]]?'Ej.: '+A[acts[0]].n:'Ej.: tocar guitarra')}" value="${esc(S.learn)}"></div>
+<div>${placeOptions(p)}</div>
+<div><span class="qtitle" id="fq">¿QUÉ HARÁS PRIMERO?</span><div class="opts" role="radiogroup" aria-labelledby="fq">${FIRST.map((f,i)=>`<button type="button" class="opt" role="radio" aria-checked="${S.first===f}" data-a="first" data-v="${f}" data-k="f-${i}"><span class="dot"></span>${f}</button>`).join('')}</div>
+${S.first==='Otra idea'?`<label for="fo" class="sr">Tu idea</label><input type="text" id="fo" data-k="fo" maxlength="100" placeholder="Escribe tu idea" value="${esc(S.firstOther)}" style="margin-top:10px">`:''}</div>
+<div><span class="qtitle" id="hq">¿QUIÉN PUEDE AYUDARTE? <span style="font-family:Inter;font-size:14px;font-weight:600">(opcional, sin nombres)</span></span><div class="chips" role="radiogroup" aria-labelledby="hq">${HELP.map((h,i)=>`<button type="button" class="chip" role="radio" aria-checked="${S.helper===h}" aria-pressed="${S.helper===h}" data-a="help" data-v="${h}" data-k="h-${i}">${h}</button>`).join('')}</div></div>
+</form>
+<p class="note coral">Si eres menor de edad, pide ayuda a una persona adulta de confianza antes de visitar un lugar o inscribirte.</p></section>`}
+function planData(){const p=placeObj();return {ints:S.ints.map(i=>IM[i].n),acts:S.acts.map(a=>A[a].n),learn:S.learn.trim(),place:p,first:S.first==='Otra idea'?(S.firstOther.trim()||'Otra idea'):S.first,helper:S.helper}}
+function s5(){const d=planData();
+ const L=(arr,empty)=>arr.length?`<div class="pills">${arr.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:`<p>${empty}</p>`;
+ return `<section class="screen pop"><p class="eyebrow noprint">PASO 6 DE 6</p><h1 class="h2">¡MIRA TODO LO QUE DESCUBRISTE!</h1>
+<div class="sum">
+<div class="box lime"><h3>TUS INTERESES</h3>${L(d.ints,'Aún no elegiste intereses.')}</div>
+<div class="box purple"><h3>LO QUE QUIERES PROBAR</h3>${L(d.acts,'Puedes elegir actividades en el paso 3.')}${d.learn?`<p><b>Quiero aprender:</b> ${esc(d.learn)}</p>`:''}</div>
+<div class="box"><h3>EL LUGAR QUE ELEGISTE</h3>${d.place?`<p><b>${esc(d.place.n)}</b><br>${d.place.p?'Programa en varias sedes':esc(d.place.a)+(d.place.d?' · '+esc(d.place.d):'')}</p><p>Consulta si hay talleres disponibles.</p>${d.place.p?'':`<p><a class="btn blue sm" href="${mapsUrl(d.place)}" target="_blank" rel="noopener">VER CÓMO LLEGAR</a></p>`}`:'<p>Aún no eliges un lugar.</p>'}</div>
+<div class="box coral"><h3>TU PRIMER PASO</h3><p>${d.first?esc(d.first):'Aún no lo eliges.'}</p>${d.helper?`<p><b>Me puede ayudar:</b> ${esc(d.helper)}</p>`:''}</div>
+</div>
+<div class="actions"><button class="btn" data-a="pdf" data-k="pdf" id="pdfbtn">DESCARGAR MI PLAN EN PDF</button><button class="btn sec" data-a="print" data-k="print">IMPRIMIR</button><button class="btn sec" data-a="copy" data-k="copy">COPIAR MI PLAN</button><button class="btn coral" data-a="again" data-k="again">EXPLORAR OTRA VEZ</button></div>
+${S.reset?`<div class="note coral" role="alertdialog" aria-label="Confirmar"><b>¿Borrar tus respuestas y empezar de nuevo?</b><div class="chips" style="margin-top:10px"><button class="btn sm" data-a="resetyes" data-k="ry">Sí, empezar de nuevo</button><button class="btn sec sm" data-a="resetno" data-k="rn">No, regresar</button></div></div>`:''}
+<p class="note">Si eres menor de edad, pide ayuda a una persona adulta de confianza antes de visitar un lugar o inscribirte.</p>
+<p class="privacy">Universos Posibles · Tu origen es parte de tu historia, no el límite de tus posibilidades.</p></section>`}
+const SCREENS=[s0,s1,s2,s3,s4,s5];
+
+/* ================= RENDER ================= */
+const app=document.getElementById('app'),nav=document.getElementById('nav');
+function render(focusTop){
+ const ae=document.activeElement,k=ae&&ae.dataset?ae.dataset.k:null,sel=ae&&'selectionStart'in ae?[ae.selectionStart,ae.selectionEnd]:null;
+ app.innerHTML=SCREENS[S.step]();
+ document.getElementById('prog').innerHTML=STEPS.map((_,i)=>`<span class="${i<S.step?'on':i===S.step?'now':''}"></span>`).join('');
+ document.getElementById('steplbl').textContent=`${S.step+1}/6 · ${STEPS[S.step]}`;
+ const nxt={0:'¡QUIERO EXPLORAR!',1:'DESCUBRIR MÁS',2:'BUSCAR LUGARES',3:'HACER MI PLAN',4:'VER MI UNIVERSO'}[S.step];
+ const mid=S.step===1?`<span class="count" aria-live="polite">${S.ints.length} ${S.ints.length===1?'interés':'intereses'}</span>`:S.step===2?`<span class="count">${S.acts.length} elegidas</span>`:'';
+ nav.innerHTML=`<div class="wrap">${S.step>0?`<button class="btn sec" data-a="go" data-v="${S.step-1}" data-k="prev">← Regresar</button>`:'<span></span>'}${mid}${nxt?`<button class="btn" data-a="go" data-v="${S.step+1}" data-k="next">${nxt} →</button>`:'<span></span>'}</div>`;
+ if(focusTop){window.scrollTo({top:0});app.focus({preventScroll:true});document.getElementById('live').textContent=`Paso ${S.step+1} de 6: ${STEPS[S.step]}`}
+ else if(k){const el=document.querySelector(`[data-k="${k}"]`);if(el){el.focus({preventScroll:true});if(sel&&'setSelectionRange'in el)try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}
+}
+function toast(t){const d=document.createElement('div');d.className='toast pop';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+
+/* ================= PDF (generado en el navegador) ================= */
+function pdfBytes(d){
+ const W=595,H=842,M=48;const pages=[];let ops=[],y=H-M;
+ const enc=s=>String(s).replace(/[–—]/g,'-').replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/…/g,'...').replace(/[^\x20-\xFF]/g,'?').replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+ const newPage=()=>{pages.push(ops);ops=[];y=H-M};
+ const text=(s,size,bold,color)=>{const maxc=Math.floor((W-2*M)/(size*0.52));const words=String(s).split(/\s+/);let line='';const lines=[];words.forEach(w=>{if((line+' '+w).trim().length>maxc){lines.push(line);line=w}else line=(line+' '+w).trim()});if(line)lines.push(line);
+  lines.forEach(l=>{if(y<M+size)newPage();ops.push(`${color||'0.09 0.09 0.09'} rg BT /${bold?'F2':'F1'} ${size} Tf ${M} ${y-size} Td (${enc(l)}) Tj ET`);y-=size*1.35})};
+ const gap=g=>{y-=g};
+ const head=(t,c)=>{if(y<M+60)newPage();ops.push(`${c} rg ${M} ${y-26} ${W-2*M} 26 re f 0.09 0.09 0.09 RG 2 w ${M} ${y-26} ${W-2*M} 26 re S`);ops.push(`0.09 0.09 0.09 rg BT /F2 13 Tf ${M+10} ${y-18} Td (${enc(t)}) Tj ET`);y-=40};
+ ops.push(`0.851 1 0.263 rg 0 ${H-120} ${W} 120 re f`);
+ ops.push(`0.09 0.09 0.09 rg BT /F2 28 Tf ${M} ${H-62} Td (UNIVERSOS POSIBLES) Tj ET`);
+ ops.push(`0.19 0.36 0.92 rg BT /F2 16 Tf ${M} ${H-90} Td (${enc('Mi plan: ¡mira todo lo que descubrí!')}) Tj ET`);
+ y=H-150;
+ head('MIS INTERESES','0.851 1 0.263');text(d.ints.join(' · ')||'Sin elegir todavía.',12);gap(10);
+ head('LO QUE QUIERO PROBAR','0.616 0.475 0.91');text(d.acts.join(' · ')||'Sin elegir todavía.',12);if(d.learn){gap(4);text('Quiero aprender: '+d.learn,12,true)}gap(10);
+ head('EL LUGAR QUE ELEGÍ','0.192 0.357 0.922');
+ if(d.place){text(d.place.n,13,true);text(d.place.p?'Programa en varias sedes':(d.place.a+(d.place.d?' · '+d.place.d:'')),11);text('Consulta si hay talleres disponibles, horarios, edades e inscripción antes de ir.',11);text('Datos de los documentos del proyecto al '+FECHA+'.',10,false,'0.3 0.3 0.3')}else text('Todavía no elijo un lugar.',12);gap(10);
+ head('MI PRIMER PASO','1 0.475 0.286');text(d.first||'Todavía no lo elijo.',12,true);if(d.helper)text('Me puede ayudar: '+d.helper,12);gap(14);
+ text('Si eres menor de edad, pide ayuda a una persona adulta de confianza antes de visitar un lugar o inscribirte.',11,true,'0.75 0.2 0.1');gap(6);
+ text('Universos Posibles · Proyecto de intervención comunitaria · Violencias y Construcción de Paz · Universidad Iberoamericana Ciudad de México · 2026',9,false,'0.3 0.3 0.3');
+ pages.push(ops);
+ const objs=[];const add=s=>{objs.push(s);return objs.length};
+ const cat=add(''),pg=add('');const f1=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'),f2=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+ const kids=[];pages.forEach(o=>{const s=o.join('\n');const c=add(`<< /Length ${s.length} >>\nstream\n${s}\nendstream`);kids.push(add(`<< /Type /Page /Parent ${pg} 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >> >> /Contents ${c} 0 R >>`))});
+ objs[cat-1]=`<< /Type /Catalog /Pages ${pg} 0 R >>`;objs[pg-1]=`<< /Type /Pages /Kids [${kids.map(k=>k+' 0 R').join(' ')}] /Count ${kids.length} >>`;
+ let out='%PDF-1.4\n%\xE2\xE3\xCF\xD3\n';const off=[];objs.forEach((o,i)=>{off.push(out.length);out+=`${i+1} 0 obj\n${o}\nendobj\n`});
+ const x=out.length;out+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n`+off.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<< /Size ${objs.length+1} /Root ${cat} 0 R >>\nstartxref\n${x}\n%%EOF`;
+ const b=new Uint8Array(out.length);for(let i=0;i<out.length;i++)b[i]=out.charCodeAt(i)&255;return b;
+}
+function planText(){const d=planData();return ['UNIVERSOS POSIBLES — Mi plan','Mis intereses: '+(d.ints.join(', ')||'—'),'Quiero probar: '+(d.acts.join(', ')||'—'),d.learn?'Quiero aprender: '+d.learn:'','Lugar: '+(d.place?d.place.n+(d.place.d?' ('+d.place.d+')':''):'—'),'Mi primer paso: '+(d.first||'—'),d.helper?'Me puede ayudar: '+d.helper:'','Consulta si hay talleres disponibles antes de ir.'].filter(Boolean).join('\n')}
+let downloads=null;
+if(window.claude&&window.claude.use){window.claude.use('downloads').then(x=>{downloads=x}).catch(()=>{})}
+async function savePdf(){
+ const bytes=pdfBytes(planData());
+ if(downloads){try{await downloads.save({filename:'mi-plan-universos-posibles.pdf',data:bytes});toast('¡Listo! Tu plan se descargó.');return}catch(e){if(e&&e.code==='declined'){toast('Descarga cancelada.');return}}}
+ try{const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));const a=document.createElement('a');a.href=url;a.download='mi-plan-universos-posibles.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Si no se descargó, usa “Copiar mi plan”.')}catch(e){toast('No se pudo descargar aquí. Usa “Copiar mi plan”.')}
+}
+
+/* ================= EVENTOS ================= */
+app.addEventListener('input',e=>{const k=e.target.dataset.k;
+ if(k==='q'){S.q=e.target.value;render()}else if(k==='learn')S.learn=e.target.value;else if(k==='fo')S.firstOther=e.target.value});
+app.addEventListener('change',e=>{if(e.target.dataset.k==='alc'){S.alc=e.target.value;if(S.alc)S.zone='todas';render()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
+ switch(a){
+ case'go':{const n=+v;if(n===2&&!S.ints.length){toast('Elige al menos un interés o toca “Sorpréndeme”.');if(S.step===1)return}S.step=Math.max(0,Math.min(5,n));S.reset=false;render(true);return}
+ case'int':S.ints=tog(S.ints,v);break;
+ case'cat':S.cat=v;break;
+ case'unsure':S.unsure=!S.unsure;break;
+ case'surprise':{const cs=Object.keys(CATS).sort(()=>Math.random()-.5).slice(0,3);const pick=cs.map(c=>{const l=I.filter(x=>x.c===c&&!has(S.ints,x.id));return l[Math.floor(Math.random()*l.length)]}).filter(Boolean);pick.forEach(p=>S.ints=tog(S.ints,p.id));toast(pick.length?'Agregamos: '+pick.map(p=>p.n).join(', '):'¡Ya elegiste muchísimo!');break}
+ case'more':S.more=true;break;
+ case'act':S.acts=tog(S.acts,v);break;
+ case'zone':S.zone=v;if(v!=='todas')S.alc='';break;
+ case'kind':S.kind=v;break;
+ case'off':S.off=tog(S.off,v);break;
+ case'plmore':S.plMore=true;break;
+ case'optmore':S.optMore=true;break;
+ case'clear':S.zone='todas';S.alc='';S.kind='todos';S.off=[];break;
+ case'place':S.place=S.place===v?null:v;toast(S.place?'¡Lugar elegido! Puedes seguir a tu plan.':'Quitaste el lugar.');break;
+ case'first':S.first=v;break;
+ case'help':S.helper=S.helper===v?'':v;break;
+ case'pdf':savePdf();return;
+ case'print':try{window.print()}catch(err){}toast('Si no se abre la impresión, descarga el PDF e imprímelo.');return;
+ case'copy':{const t=planText();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copiamos tu plan.'),()=>toast('No se pudo copiar aquí.'));return}
+ case'again':S.reset=true;break;
+ case'resetno':S.reset=false;break;
+ case'resetyes':S=blank();render(true);return;
+ default:return}
+ render();
+});
+render();
+}
+</script>
+</body>
+</html>
